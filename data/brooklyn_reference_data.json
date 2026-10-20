@@ -1,0 +1,677 @@
+{
+  "city": "New York (Brooklyn)",
+  "borough": "Brooklyn",
+  "county": "Kings County",
+  "state": "NY",
+  "state_fips": "36",
+  "county_fips": "047",
+  "campaign": {
+    "name": "NOAA Heat Watch Brooklyn",
+    "layer_id": 67,
+    "window": "Afternoon (Peak Heat)",
+    "observation_count": 15105,
+    "temperature_f": {
+      "min": 85.4,
+      "max": 95.4,
+      "mean": 90.05,
+      "spread": 10.0
+    },
+    "bounding_box": {
+      "min_lat": 40.6069,
+      "max_lat": 40.7504,
+      "min_lon": -74.0418,
+      "max_lon": -73.874
+    }
+  },
+  "demographics_summary": {
+    "total_tracts_in_city_bounds": 2939,
+    "total_population": 11357064.0,
+    "avg_median_age": 38.5,
+    "avg_poverty_pct": 15.2,
+    "avg_no_vehicle_pct": 38.8
+  },
+  "station_history": {
+    "total_observations": 19435,
+    "num_stations": 11,
+    "date_range": "2019-01-01 to 2025-12-31"
+  },
+  "street_tree_census": {
+    "source": "bigquery-public-data.new_york_trees.tree_census_2015",
+    "license": "CC0 / Public Domain",
+    "total_brooklyn_street_trees": 177293,
+    "features_derived": [
+      "tract_tree_density_per_km2",
+      "canopy_deficit_pct",
+      "local_block_trees_250m"
+    ]
+  },
+  "campaign_summary": {
+    "total_observations": 15142,
+    "city_avg_temp_f": 91.4,
+    "temp_min_f": 84.1,
+    "temp_max_f": 99.8,
+    "intra_city_spread_f": 15.7,
+    "total_tracts": 761,
+    "total_population": 2641052,
+    "station_name": "NY CITY CENTRAL PARK / JFK INTL / BROOKLYN",
+    "station_years": "2019-2025",
+    "model_metrics": {
+      "model_type": "LINEAR_REG (a4i_climate.heat_offset_model)",
+      "r2_score": 0.642,
+      "mean_absolute_error_f": 1.18,
+      "rmse_f": 1.54,
+      "leakage_check": "PASS (R2=0.642; physical features only; temp_f and race excluded from inputs)"
+    },
+    "city_averages": {
+      "poverty_pct": 17.8,
+      "no_vehicle_pct": 56.2,
+      "over_65_pct": 14.9,
+      "median_income": 74692,
+      "trees_per_km2": 842.0,
+      "canopy_deficit_pct": 50.0,
+      "bipoc_pct": 63.4,
+      "black_pct": 28.9,
+      "hispanic_pct": 18.9,
+      "asian_pct": 12.6,
+      "white_pct": 36.6
+    }
+  },
+  "sites": [
+    {
+      "site_id": "BK-01",
+      "geo_id": "36047091000",
+      "neighborhood": "Brownsville",
+      "intersection": "Pitkin Ave & Mother Gaston Blvd",
+      "address": "1710 Pitkin Ave, Brooklyn, NY 11212",
+      "latitude": 40.6694,
+      "longitude": -73.9085,
+      "predicted_offset_f": 5.4,
+      "priority_score": 96.4,
+      "canopy_deficit_pct": 91.2,
+      "trees_per_km2": 295.0,
+      "local_block_trees": 6,
+      "housing_density_per_km2": 15840.0,
+      "pop_density_per_km2": 38900.0,
+      "building_age_years": 74.0,
+      "inland_dist_km": 11.4,
+      "water_area_pct": 0.0,
+      "total_pop": 5420,
+      "pop_over_65": 986,
+      "over_65_pct": 18.2,
+      "median_age": 37.4,
+      "median_income": 31200,
+      "poverty_pct": 38.4,
+      "no_vehicle_pct": 78.6,
+      "no_vehicle_households": 1680,
+      "bipoc_pct": 95.8,
+      "black_pct": 74.2,
+      "hispanic_pct": 19.1,
+      "asian_pct": 1.8,
+      "white_pct": 4.2,
+      "recommended_intervention": "Cool Pavement / Depaving + Permanent Cooling Center",
+      "estimated_cooling_center_cost_usd": 420000,
+      "estimated_canopy_trees_needed": 180,
+      "estimated_canopy_cost_usd": 216000,
+      "nearest_existing_facility": "Brownsville Recreation Center (0.65 mi walk \u2014 14 min in extreme heat)",
+      "top_feature_attributions": [
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": 2.35,
+          "explanation": "Severe street tree canopy deficit (only 295 trees/km\u00b2 vs. 842 borough avg)"
+        },
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 1.62,
+          "explanation": "High impervious building & asphalt footprint absorbing solar radiation"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": 0.88,
+          "explanation": "Immediate Pitkin Ave commercial corridor block has only 6 live street trees"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.43,
+          "explanation": "Pre-1955 masonry/dark-roof housing stock retaining afternoon heat"
+        },
+        {
+          "feature": "inland_dist_km",
+          "attribution": 0.12,
+          "explanation": "Interior basin cutoff from Atlantic coastal breeze"
+        }
+      ],
+      "priority_rank": 1,
+      "raw_heat_rank": 2,
+      "rank_shift": 1
+    },
+    {
+      "site_id": "BK-02",
+      "geo_id": "36047115600",
+      "neighborhood": "East New York",
+      "intersection": "Fulton St & Pennsylvania Ave",
+      "address": "2690 Fulton St, Brooklyn, NY 11207",
+      "latitude": 40.6761,
+      "longitude": -73.8962,
+      "predicted_offset_f": 5.1,
+      "priority_score": 94.1,
+      "canopy_deficit_pct": 88.5,
+      "trees_per_km2": 330.0,
+      "local_block_trees": 8,
+      "housing_density_per_km2": 13400.0,
+      "pop_density_per_km2": 34200.0,
+      "building_age_years": 71.0,
+      "inland_dist_km": 11.9,
+      "water_area_pct": 0.0,
+      "total_pop": 6180,
+      "pop_over_65": 1038,
+      "over_65_pct": 16.8,
+      "median_age": 36.1,
+      "median_income": 36800,
+      "poverty_pct": 33.9,
+      "no_vehicle_pct": 72.4,
+      "no_vehicle_households": 1590,
+      "bipoc_pct": 94.1,
+      "black_pct": 61.5,
+      "hispanic_pct": 29.8,
+      "asian_pct": 2.8,
+      "white_pct": 5.9,
+      "recommended_intervention": "Street Tree Canopy Expansion + Permanent Cooling Center",
+      "estimated_cooling_center_cost_usd": 395000,
+      "estimated_canopy_trees_needed": 220,
+      "estimated_canopy_cost_usd": 264000,
+      "nearest_existing_facility": "Arlington Branch Library (limited evening hours)",
+      "top_feature_attributions": [
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": 2.18,
+          "explanation": "88.5th percentile canopy deficit along elevated transit & commercial corridor"
+        },
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 1.38,
+          "explanation": "Dense multi-family & wide arterial asphalt corridor"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": 0.81,
+          "explanation": "Minimal shade along Broadway Junction / Fulton pedestrian transfer zone"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.49,
+          "explanation": "Older uninsulated brick structures with dark tar roofs"
+        },
+        {
+          "feature": "inland_dist_km",
+          "attribution": 0.24,
+          "explanation": "11.9 km inland from southwestern sea breeze"
+        }
+      ],
+      "priority_rank": 2,
+      "raw_heat_rank": 3,
+      "rank_shift": 1
+    },
+    {
+      "site_id": "BK-03",
+      "geo_id": "36047042900",
+      "neighborhood": "Bushwick",
+      "intersection": "Myrtle Ave & Broadway",
+      "address": "1115 Broadway, Brooklyn, NY 11221",
+      "latitude": 40.6969,
+      "longitude": -73.9351,
+      "predicted_offset_f": 4.9,
+      "priority_score": 91.8,
+      "canopy_deficit_pct": 85.4,
+      "trees_per_km2": 375.0,
+      "local_block_trees": 9,
+      "housing_density_per_km2": 16900.0,
+      "pop_density_per_km2": 42100.0,
+      "building_age_years": 82.0,
+      "inland_dist_km": 12.6,
+      "water_area_pct": 0.0,
+      "total_pop": 5890,
+      "pop_over_65": 842,
+      "over_65_pct": 14.3,
+      "median_age": 33.8,
+      "median_income": 44500,
+      "poverty_pct": 29.7,
+      "no_vehicle_pct": 76.1,
+      "no_vehicle_households": 1710,
+      "bipoc_pct": 84.6,
+      "black_pct": 21.4,
+      "hispanic_pct": 56.2,
+      "asian_pct": 5.9,
+      "white_pct": 15.4,
+      "recommended_intervention": "Cool Pavement / Depaving + Permanent Cooling Center",
+      "estimated_cooling_center_cost_usd": 410000,
+      "estimated_canopy_trees_needed": 160,
+      "estimated_canopy_cost_usd": 192000,
+      "nearest_existing_facility": "Bushwick Senior Center (0.52 mi walk)",
+      "top_feature_attributions": [
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 1.84,
+          "explanation": "Very high tenement density and elevated rail/roadway thermal mass"
+        },
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": 1.92,
+          "explanation": "85.4% canopy deficit across Myrtle-Broadway commercial triangle"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.64,
+          "explanation": "Pre-war walk-up tenements (median built ~1944) with low central A/C penetration"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": 0.38,
+          "explanation": "Sidewalk vaults restrict deep tree pits without structural soil cells"
+        },
+        {
+          "feature": "inland_dist_km",
+          "attribution": 0.12,
+          "explanation": "Northern interior Brooklyn heat island core"
+        }
+      ],
+      "priority_rank": 3,
+      "raw_heat_rank": 4,
+      "rank_shift": 1
+    },
+    {
+      "site_id": "BK-04",
+      "geo_id": "36047082000",
+      "neighborhood": "East Flatbush",
+      "intersection": "Church Ave & Nostrand Ave",
+      "address": "2902 Nostrand Ave, Brooklyn, NY 11226",
+      "latitude": 40.6505,
+      "longitude": -73.9494,
+      "predicted_offset_f": 4.6,
+      "priority_score": 89.5,
+      "canopy_deficit_pct": 81.0,
+      "trees_per_km2": 430.0,
+      "local_block_trees": 11,
+      "housing_density_per_km2": 16200.0,
+      "pop_density_per_km2": 41500.0,
+      "building_age_years": 78.0,
+      "inland_dist_km": 8.9,
+      "water_area_pct": 0.0,
+      "total_pop": 6410,
+      "pop_over_65": 1243,
+      "over_65_pct": 19.4,
+      "median_age": 40.2,
+      "median_income": 48200,
+      "poverty_pct": 24.8,
+      "no_vehicle_pct": 69.5,
+      "no_vehicle_households": 1640,
+      "bipoc_pct": 92.8,
+      "black_pct": 81.3,
+      "hispanic_pct": 8.9,
+      "asian_pct": 1.9,
+      "white_pct": 7.2,
+      "recommended_intervention": "High-Capacity Cooling Center + Street Tree Canopy Expansion",
+      "estimated_cooling_center_cost_usd": 385000,
+      "estimated_canopy_trees_needed": 195,
+      "estimated_canopy_cost_usd": 234000,
+      "nearest_existing_facility": "Rugby Library (small capacity, frequently at limit)",
+      "top_feature_attributions": [
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": 1.79,
+          "explanation": "Unshaded bus-transfer arterial along Church Ave & Nostrand Ave"
+        },
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 1.68,
+          "explanation": "Dense 6-story brick apartment blocks with minimal courtyard vegetation"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.58,
+          "explanation": "Aging 1940s apartment stock occupied by high concentration of seniors (19.4% 65+)"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": 0.45,
+          "explanation": "Low street canopy along heavy transit waiting corridors"
+        },
+        {
+          "feature": "inland_dist_km",
+          "attribution": 0.1,
+          "explanation": "Central Brooklyn interior"
+        }
+      ],
+      "priority_rank": 4,
+      "raw_heat_rank": 5,
+      "rank_shift": 1
+    },
+    {
+      "site_id": "BK-05",
+      "geo_id": "36047008400",
+      "neighborhood": "Sunset Park",
+      "intersection": "4th Ave & 36th St",
+      "address": "950 4th Ave, Brooklyn, NY 11232",
+      "latitude": 40.6538,
+      "longitude": -74.0049,
+      "predicted_offset_f": 4.3,
+      "priority_score": 86.2,
+      "canopy_deficit_pct": 79.5,
+      "trees_per_km2": 450.0,
+      "local_block_trees": 10,
+      "housing_density_per_km2": 14800.0,
+      "pop_density_per_km2": 39400.0,
+      "building_age_years": 86.0,
+      "inland_dist_km": 4.2,
+      "water_area_pct": 1.2,
+      "total_pop": 5720,
+      "pop_over_65": 892,
+      "over_65_pct": 15.6,
+      "median_age": 35.9,
+      "median_income": 43900,
+      "poverty_pct": 28.1,
+      "no_vehicle_pct": 74.0,
+      "no_vehicle_households": 1490,
+      "bipoc_pct": 86.4,
+      "black_pct": 4.1,
+      "hispanic_pct": 42.8,
+      "asian_pct": 38.6,
+      "white_pct": 13.6,
+      "recommended_intervention": "Street Tree Canopy Expansion + Cooling Center",
+      "estimated_cooling_center_cost_usd": 370000,
+      "estimated_canopy_trees_needed": 175,
+      "estimated_canopy_cost_usd": 210000,
+      "nearest_existing_facility": "Sunset Park Recreation Center (uphill 0.55 mi walk across 5th Ave)",
+      "top_feature_attributions": [
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": 1.85,
+          "explanation": "Wide 4th Ave & Gowanus Expressway industrial edge lacks street tree canopy"
+        },
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 1.49,
+          "explanation": "Continuous rowhouses and industrial-residential boundary pavement"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.72,
+          "explanation": "Pre-1940 walk-up buildings with high indoor heat retention"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": 0.44,
+          "explanation": "Wide multi-lane asphalt roadway median has minimal shade cover"
+        },
+        {
+          "feature": "water_area_pct",
+          "attribution": -0.2,
+          "explanation": "Slight moderating breeze from Upper New York Bay"
+        }
+      ],
+      "priority_rank": 5,
+      "raw_heat_rank": 6,
+      "rank_shift": 1
+    },
+    {
+      "site_id": "BK-06",
+      "geo_id": "36047034000",
+      "neighborhood": "Coney Island",
+      "intersection": "Surf Ave & Stillwell Ave",
+      "address": "1310 Surf Ave, Brooklyn, NY 11224",
+      "latitude": 40.5755,
+      "longitude": -73.9812,
+      "predicted_offset_f": 2.9,
+      "priority_score": 81.4,
+      "canopy_deficit_pct": 77.0,
+      "trees_per_km2": 480.0,
+      "local_block_trees": 7,
+      "housing_density_per_km2": 12900.0,
+      "pop_density_per_km2": 31800.0,
+      "building_age_years": 64.0,
+      "inland_dist_km": 0.8,
+      "water_area_pct": 14.5,
+      "total_pop": 5190,
+      "pop_over_65": 1365,
+      "over_65_pct": 26.3,
+      "median_age": 46.8,
+      "median_income": 32400,
+      "poverty_pct": 34.2,
+      "no_vehicle_pct": 75.8,
+      "no_vehicle_households": 1610,
+      "bipoc_pct": 62.1,
+      "black_pct": 31.0,
+      "hispanic_pct": 21.4,
+      "asian_pct": 9.1,
+      "white_pct": 37.9,
+      "recommended_intervention": "Targeted Senior Cooling Center + Resilient Power Backup",
+      "estimated_cooling_center_cost_usd": 360000,
+      "estimated_canopy_trees_needed": 110,
+      "estimated_canopy_cost_usd": 132000,
+      "nearest_existing_facility": "Coney Island Library (0.45 mi walk)",
+      "top_feature_attributions": [
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": 1.72,
+          "explanation": "Expansive parking lots and commercial concrete strips near transit terminal"
+        },
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 1.18,
+          "explanation": "High-rise tower-in-the-park concrete plazas with low shade"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": 0.65,
+          "explanation": "Sandy soil and salt exposure limit mature street trees"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.35,
+          "explanation": "1960s high-rise senior housing vulnerable to elevator/power outages"
+        },
+        {
+          "feature": "water_area_pct",
+          "attribution": -1.0,
+          "explanation": "Strong Atlantic Ocean coastal moderation reduces raw air temp by ~1.0\u00b0F"
+        }
+      ],
+      "priority_rank": 6,
+      "raw_heat_rank": 7,
+      "rank_shift": 1
+    },
+    {
+      "site_id": "BK-07",
+      "geo_id": "36047044900",
+      "neighborhood": "East Williamsburg (IBZ)",
+      "intersection": "Grand St & Morgan Ave",
+      "address": "1050 Grand St, Brooklyn, NY 11211",
+      "latitude": 40.7135,
+      "longitude": -73.9324,
+      "predicted_offset_f": 5.6,
+      "priority_score": 61.2,
+      "canopy_deficit_pct": 96.5,
+      "trees_per_km2": 110.0,
+      "local_block_trees": 2,
+      "housing_density_per_km2": 4200.0,
+      "pop_density_per_km2": 9800.0,
+      "building_age_years": 68.0,
+      "inland_dist_km": 13.8,
+      "water_area_pct": 2.1,
+      "total_pop": 1420,
+      "pop_over_65": 115,
+      "over_65_pct": 8.1,
+      "median_age": 31.2,
+      "median_income": 89400,
+      "poverty_pct": 11.4,
+      "no_vehicle_pct": 52.0,
+      "no_vehicle_households": 340,
+      "bipoc_pct": 44.0,
+      "black_pct": 8.5,
+      "hispanic_pct": 24.5,
+      "asian_pct": 10.2,
+      "white_pct": 56.0,
+      "recommended_intervention": "Cool Roofs Mandate & Industrial Depaving (Not a Cooling Center \u2014 low residential pop)",
+      "estimated_cooling_center_cost_usd": 400000,
+      "estimated_canopy_trees_needed": 240,
+      "estimated_canopy_cost_usd": 288000,
+      "nearest_existing_facility": "Cooper Park Community Center (0.4 mi)",
+      "top_feature_attributions": [
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": 2.85,
+          "explanation": "96.5% canopy deficit across industrial warehouses and truck yards"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": 1.45,
+          "explanation": "Virtually zero street trees (only 2 trees on block)"
+        },
+        {
+          "feature": "inland_dist_km",
+          "attribution": 0.65,
+          "explanation": "Northern industrial basin traps afternoon radiant heat"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.45,
+          "explanation": "Dark bitumen warehouse roofs"
+        },
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 0.2,
+          "explanation": "Low residential density, high industrial lot coverage"
+        }
+      ],
+      "priority_rank": 7,
+      "raw_heat_rank": 1,
+      "rank_shift": -6
+    },
+    {
+      "site_id": "BK-08",
+      "geo_id": "36047012901",
+      "neighborhood": "Park Slope (Prospect Park West)",
+      "intersection": "7th Ave & 3rd St",
+      "address": "210 7th Ave, Brooklyn, NY 11215",
+      "latitude": 40.6712,
+      "longitude": -73.9768,
+      "predicted_offset_f": -2.4,
+      "priority_score": 18.5,
+      "canopy_deficit_pct": 8.2,
+      "trees_per_km2": 1680.0,
+      "local_block_trees": 46,
+      "housing_density_per_km2": 11200.0,
+      "pop_density_per_km2": 27400.0,
+      "building_age_years": 95.0,
+      "inland_dist_km": 7.4,
+      "water_area_pct": 3.5,
+      "total_pop": 4380,
+      "pop_over_65": 569,
+      "over_65_pct": 13.0,
+      "median_age": 38.9,
+      "median_income": 168500,
+      "poverty_pct": 4.8,
+      "no_vehicle_pct": 54.0,
+      "no_vehicle_households": 980,
+      "bipoc_pct": 24.5,
+      "black_pct": 5.2,
+      "hispanic_pct": 9.8,
+      "asian_pct": 8.4,
+      "white_pct": 75.5,
+      "recommended_intervention": "Maintain Existing Mature Canopy (No new capital siting required)",
+      "estimated_cooling_center_cost_usd": 0,
+      "estimated_canopy_trees_needed": 0,
+      "estimated_canopy_cost_usd": 0,
+      "nearest_existing_facility": "Park Slope Library & Prospect Park shade corridor (0.15 mi)",
+      "top_feature_attributions": [
+        {
+          "feature": "canopy_deficit_pct",
+          "attribution": -2.15,
+          "explanation": "Lush mature London Plane & Oak street canopy (1,680 trees/km\u00b2) + Prospect Park proximity"
+        },
+        {
+          "feature": "local_tree_scarcity",
+          "attribution": -1.1,
+          "explanation": "46 mature trees on immediate block create continuous shaded arch"
+        },
+        {
+          "feature": "housing_density_per_km2",
+          "attribution": 0.55,
+          "explanation": "Low-rise brownstone fabric"
+        },
+        {
+          "feature": "building_age_years",
+          "attribution": 0.45,
+          "explanation": "Historic masonry brownstones"
+        },
+        {
+          "feature": "water_area_pct",
+          "attribution": -0.15,
+          "explanation": "Evapotranspiration from Prospect Park lake & parkland"
+        }
+      ],
+      "priority_rank": 8,
+      "raw_heat_rank": 8,
+      "rank_shift": 0
+    }
+  ],
+  "ghcn_station_history": {
+    "years_analyzed": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "annual_days_90f_station_baseline": [
+      18,
+      21,
+      19,
+      25,
+      22,
+      28,
+      29
+    ],
+    "annual_days_95f_station_baseline": [
+      4,
+      5,
+      4,
+      8,
+      6,
+      10,
+      11
+    ],
+    "annual_days_95f_with_5f_offset": [
+      18,
+      21,
+      19,
+      25,
+      22,
+      28,
+      29
+    ],
+    "annual_days_100f_station_baseline": [
+      0,
+      1,
+      0,
+      2,
+      1,
+      3,
+      3
+    ],
+    "annual_days_100f_with_5f_offset": [
+      4,
+      5,
+      4,
+      8,
+      6,
+      10,
+      11
+    ],
+    "early_period_avg_90f_days_2019_2021": 19.3,
+    "recent_period_avg_90f_days_2023_2025": 26.3,
+    "trend_increase_pct": 36.3,
+    "summary_insight": "Regional weather stations record an average of 7.0 days/summer >=95\u00b0F and 1.4 days/summer >=100\u00b0F. However, in Brownsville (+5.4\u00b0F offset) and East New York (+5.1\u00b0F offset), when the airport station reads 90\u00b0F, street level hits 95.4\u00b0F \u2014 meaning residents experience 23.1 days/year of >=95\u00b0F heat (3.3x the official city count) and 7.0 days/year of >=100\u00b0F heat. Furthermore, >=90\u00b0F baseline days rose +36.3% between 2019-2021 (19.3 days/yr) and 2023-2025 (26.3 days/yr)."
+  }
+}

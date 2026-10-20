@@ -67,18 +67,18 @@ with st.sidebar:
     st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 6px;'>Active View</p>", unsafe_allow_html=True)
 
     st.markdown('''
-        <div class="nav-item nav-inactive">
+        <a href="app.py?screen=1" target="_self" class="nav-item nav-inactive">
             <span>🔥 Heat Intelligence</span>
-            <span style="font-size: 0.68rem; color: #64748B;">Screen 1</span>
-        </div>
-        <div class="nav-item nav-inactive">
+            <span class="badge-soon">Screen 1</span>
+        </a>
+        <a href="app.py?screen=2" target="_self" class="nav-item nav-inactive">
             <span>🤖 AI Planning Copilot</span>
-            <span style="font-size: 0.68rem; color: #64748B;">Screen 2</span>
-        </div>
-        <div class="nav-item nav-active" style="border-left-color: #059669; background-color: #064E3B25;">
-            <span style="color: #34D399; font-weight: 700;">⚖️ Cooling Dispatch & Equity Audit</span>
-            <span style="font-size: 0.68rem; background: #059669; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">SCREEN 3</span>
-        </div>
+            <span class="badge-soon">Screen 2</span>
+        </a>
+        <a href="app.py?screen=3" target="_self" class="nav-item nav-active">
+            <span>⚖️ Equity Audit</span>
+            <span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>
+        </a>
     ''', unsafe_allow_html=True)
 
     st.markdown("<hr style='border-color: #1E293B; margin: 18px 0 14px 0;'>", unsafe_allow_html=True)
