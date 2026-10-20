@@ -30,6 +30,7 @@ from components.intersection_details import render_intersection_details
 from components.heat_explanations import render_heat_explanations
 from components.priority_table import render_priority_table
 from components.historical_heat import render_historical_heat
+from components.live_climate import render_live_climate
 
 # Screen 3 Main Screen Logic
 from screens.screen_3_dispatch_equity import render_screen_3
@@ -379,6 +380,11 @@ else:
     # 8. DASHBOARD KPI CARDS (DYNAMICALLY TAILORED TO ACTIVE PERSONA)
     # -----------------------------------------------------------------------------
     render_kpi_cards(df_intersections, data_mode=st.session_state["data_mode"], custom_kpis=p_info["kpi_metrics"])
+
+    # -----------------------------------------------------------------------------
+    # 8.5 LIVE CLIMATE INTELLIGENCE (OPEN-METEO & NWS TELEMETRY)
+    # -----------------------------------------------------------------------------
+    render_live_climate(city=city_key)
 
     st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
 
