@@ -45,4 +45,16 @@ class BackendClient:
         response.raise_for_status()
         return response.json()
 
+    def fetch_live_historical_temps(self, city: str = "brooklyn"):
+        """Queries live GHCN station_daily_temps endpoint on Cloud Run / BigQuery."""
+        import pandas as pd
+        if not self.is_live_configured:
+            raise RuntimeError("Live backend URL not configured. Switch to Demo Mode.")
+        
+        url = f"{self.base_url}/api/v1/weather/ghcn-history"
+        response = httpx.get(url, params={"city": city}, headers=self.get_headers(), timeout=12.0)
+        response.raise_for_status()
+        data = response.json()
+        return pd.DataFrame(data.get("history", []))
+
 backend_client = BackendClient()
