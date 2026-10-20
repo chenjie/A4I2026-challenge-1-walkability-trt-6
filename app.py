@@ -230,13 +230,10 @@ else:
 
     with header_col1:
         st.markdown(f"""
-            <div style="margin-bottom: 2px;">
+            <div style="margin-bottom: 6px;">
                 <h1 style="color: #0F172A; font-size: 2.1rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;">
                     {screen_heading}
                 </h1>
-                <p style="color: #475569; font-size: 0.95rem; margin: 4px 0 0 0;">
-                    Explore street-level heat differences, community vulnerability, and AI-recommended cooling interventions.
-                </p>
             </div>
         """, unsafe_allow_html=True)
 
