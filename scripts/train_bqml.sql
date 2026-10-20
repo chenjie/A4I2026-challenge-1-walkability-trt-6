@@ -304,3 +304,25 @@ SELECT
     ELSE 'Targeted Pocket Canopy + Hydration / Library Extended Hours'
   END AS recommended_intervention
 FROM explained;
+
+-- ----------------------------------------------------------------------------
+-- STEP 5: Isolated Post-Hoc Equity Audit Lookup Table (Section 9 Requirement)
+--         "Strip the variable. Audit the outcome. Say you did both."
+--         Race is NEVER in the model -- it exists ONLY here for post-hoc audit.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE TABLE `a4i_climate.tract_equity_audit_lookup` AS
+SELECT
+  LPAD(acs.geo_id, 11, '0') AS geo_id,
+  SAFE_DIVIDE(SAFE_CAST(acs.black_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS black_pct,
+  SAFE_DIVIDE(SAFE_CAST(acs.hispanic_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS hispanic_pct,
+  SAFE_DIVIDE(SAFE_CAST(acs.asian_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS asian_pct,
+  SAFE_DIVIDE(SAFE_CAST(acs.white_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS white_pct,
+  SAFE_DIVIDE(
+    COALESCE(SAFE_CAST(acs.black_pop AS FLOAT64), 0) +
+    COALESCE(SAFE_CAST(acs.hispanic_pop AS FLOAT64), 0) +
+    COALESCE(SAFE_CAST(acs.asian_pop AS FLOAT64), 0),
+    NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)
+  ) * 100.0 AS bipoc_pct
+FROM `bigquery-public-data.census_bureau_acs.censustract_2020_5yr` acs
+JOIN `a4i_climate.tract_features` tf
+  ON LPAD(acs.geo_id, 11, '0') = tf.geo_id;
