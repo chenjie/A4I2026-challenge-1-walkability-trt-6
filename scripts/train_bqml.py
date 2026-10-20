@@ -327,6 +327,31 @@ def run_step_4(client, dataset="a4i_climate"):
     job.result()
     print(f"Step 4 completed in {time.time() - t0:.1f}s.")
 
+def run_step_5(client, dataset="a4i_climate"):
+    print("Executing Step 5: Generating tract_equity_audit_lookup...")
+    t0 = time.time()
+    sql = f"""
+    CREATE OR REPLACE TABLE `{dataset}.tract_equity_audit_lookup` AS
+    SELECT
+      LPAD(acs.geo_id, 11, '0') AS geo_id,
+      SAFE_DIVIDE(SAFE_CAST(acs.black_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS black_pct,
+      SAFE_DIVIDE(SAFE_CAST(acs.hispanic_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS hispanic_pct,
+      SAFE_DIVIDE(SAFE_CAST(acs.asian_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS asian_pct,
+      SAFE_DIVIDE(SAFE_CAST(acs.white_pop AS FLOAT64), NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)) * 100.0 AS white_pct,
+      SAFE_DIVIDE(
+        COALESCE(SAFE_CAST(acs.black_pop AS FLOAT64), 0) +
+        COALESCE(SAFE_CAST(acs.hispanic_pop AS FLOAT64), 0) +
+        COALESCE(SAFE_CAST(acs.asian_pop AS FLOAT64), 0),
+        NULLIF(SAFE_CAST(acs.total_pop AS FLOAT64), 0)
+      ) * 100.0 AS bipoc_pct
+    FROM `bigquery-public-data.census_bureau_acs.censustract_2020_5yr` acs
+    JOIN `{dataset}.tract_features` tf
+      ON LPAD(acs.geo_id, 11, '0') = tf.geo_id;
+    """
+    job = client.query(sql)
+    job.result()
+    print(f"Step 5 completed in {time.time() - t0:.1f}s.")
+
 def verify_pipeline(client, dataset="a4i_climate"):
     print("\n" + "=" * 60)
     print("PIPELINE & ZERO DATA LEAKAGE VERIFICATION")
@@ -373,14 +398,75 @@ def verify_pipeline(client, dataset="a4i_climate"):
     eval_row = list(client.query(f"SELECT * FROM ML.EVALUATE(MODEL `{dataset}.heat_offset_model`)").result())[0]
     print(f"\n  [EVAL] Model MAE: {eval_row.mean_absolute_error:.3f} F | R2 Score: {eval_row.r2_score:.4f} | MSE: {eval_row.mean_squared_error:.3f}")
 
-    # 7. Predictions table
+    # 7. Global Feature Explanations (ML.GLOBAL_EXPLAIN)
+    print("\n  [GLOBAL EXPLAIN] Top Feature Attributions:")
+    global_explains = list(client.query(f"SELECT feature, ROUND(attribution, 4) as attribution FROM ML.GLOBAL_EXPLAIN(MODEL `{dataset}.heat_offset_model`) ORDER BY attribution DESC").result())
+    for ge in global_explains:
+        print(f"    - {ge.feature:<25s}: {ge.attribution:+.4f}")
+
+    # 8. Predictions table
     tpe = client.get_table(f"{client.project}.{dataset}.tract_predictions_explained")
-    print(f"  [PASS] tract_predictions_explained exists with {tpe.num_rows:,} tracts prioritized")
+    print(f"\n  [PASS] tract_predictions_explained exists with {tpe.num_rows:,} tracts prioritized")
+
+    # 9. Isolated Equity Audit table
+    teal = client.get_table(f"{client.project}.{dataset}.tract_equity_audit_lookup")
+    print(f"  [PASS] tract_equity_audit_lookup  exists with {teal.num_rows:,} rows")
+
+    # 10. Post-Hoc Racial & Socioeconomic Equity Audit Results
+    print("\n  [EQUITY AUDIT] Cohort Comparison:")
+    audit_sql = f"""
+    SELECT
+      'All Brooklyn Tracts (Baseline)' AS cohort,
+      COUNT(*) as tract_count,
+      ROUND(AVG(l.bipoc_pct), 1) AS avg_bipoc_pct,
+      ROUND(AVG(l.black_pct), 1) AS avg_black_pct,
+      ROUND(AVG(l.hispanic_pct), 1) AS avg_hispanic_pct,
+      ROUND(AVG(p.poverty_pct), 1) AS avg_poverty_pct,
+      ROUND(AVG(p.no_vehicle_pct), 1) AS avg_no_vehicle_pct,
+      ROUND(AVG(p.predicted_offset_f), 2) AS avg_predicted_offset_f
+    FROM `{dataset}.tract_predictions_explained` p
+    JOIN `{dataset}.tract_equity_audit_lookup` l ON p.geo_id = l.geo_id
+    UNION ALL
+    SELECT
+      'Top Vulnerability Priority (Score >= 85)' AS cohort,
+      COUNT(*) as tract_count,
+      ROUND(AVG(l.bipoc_pct), 1) AS avg_bipoc_pct,
+      ROUND(AVG(l.black_pct), 1) AS avg_black_pct,
+      ROUND(AVG(l.hispanic_pct), 1) AS avg_hispanic_pct,
+      ROUND(AVG(p.poverty_pct), 1) AS avg_poverty_pct,
+      ROUND(AVG(p.no_vehicle_pct), 1) AS avg_no_vehicle_pct,
+      ROUND(AVG(p.predicted_offset_f), 2) AS avg_predicted_offset_f
+    FROM `{dataset}.tract_predictions_explained` p
+    JOIN `{dataset}.tract_equity_audit_lookup` l ON p.geo_id = l.geo_id
+    WHERE p.priority_score >= 85.0
+    UNION ALL
+    SELECT
+      'Raw Heat Hotspots (Top 15% Offset)' AS cohort,
+      COUNT(*) as tract_count,
+      ROUND(AVG(l.bipoc_pct), 1) AS avg_bipoc_pct,
+      ROUND(AVG(l.black_pct), 1) AS avg_black_pct,
+      ROUND(AVG(l.hispanic_pct), 1) AS avg_hispanic_pct,
+      ROUND(AVG(p.poverty_pct), 1) AS avg_poverty_pct,
+      ROUND(AVG(p.no_vehicle_pct), 1) AS avg_no_vehicle_pct,
+      ROUND(AVG(p.predicted_offset_f), 2) AS avg_predicted_offset_f
+    FROM (
+      SELECT *, PERCENT_RANK() OVER (ORDER BY predicted_offset_f ASC) as heat_rank
+      FROM `{dataset}.tract_predictions_explained`
+    ) p
+    JOIN `{dataset}.tract_equity_audit_lookup` l ON p.geo_id = l.geo_id
+    WHERE p.heat_rank >= 0.85;
+    """
+    audit_rows = list(client.query(audit_sql).result())
+    print(f"    {'Cohort':<42s} | {'Count':<5s} | {'BIPOC %':<7s} | {'Black %':<7s} | {'Hisp %':<7s} | {'Pov %':<6s} | {'NoVeh %':<7s} | {'Offset F':<8s}")
+    print("    " + "-" * 105)
+    for r in audit_rows:
+        print(f"    {r.cohort:<42s} | {r.tract_count:<5d} | {r.avg_bipoc_pct:<7.1f} | {r.avg_black_pct:<7.1f} | {r.avg_hispanic_pct:<7.1f} | {r.avg_poverty_pct:<6.1f} | {r.avg_no_vehicle_pct:<7.1f} | {r.avg_predicted_offset_f:<+8.2f}")
+
     print("=" * 60 + "\n")
 
 def main():
     parser = argparse.ArgumentParser(description="BigQuery ML Pipeline for A4I 2026 Challenge 1")
-    parser.add_argument("--step", choices=["1", "2", "3", "4", "all"], default="all", help="Pipeline step to run")
+    parser.add_argument("--step", choices=["1", "2", "3", "4", "5", "all"], default="all", help="Pipeline step to run")
     parser.add_argument("--dataset", default="a4i_climate", help="BigQuery dataset name")
     parser.add_argument("--verify-only", action="store_true", help="Run verification without rebuilding tables")
     args = parser.parse_args()
@@ -399,8 +485,11 @@ def main():
         run_step_3(client, args.dataset)
     if args.step in ["4", "all"]:
         run_step_4(client, args.dataset)
+    if args.step in ["5", "all"]:
+        run_step_5(client, args.dataset)
 
     verify_pipeline(client, args.dataset)
 
 if __name__ == "__main__":
     main()
+
