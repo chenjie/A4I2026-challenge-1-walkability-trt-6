@@ -1,0 +1,14 @@
+intersection_id,intersection_name,latitude,longitude,predicted_offset_f,neighborhood,population,median_age,no_vehicle_rate,vulnerable_population,priority_score,risk_category
+BK-01,Rockaway Ave & Pitkin Ave,40.6698,-73.9125,5.6,Brownsville,24300,32.1,31.4,8400,94,Significantly Hotter
+BK-02,Pennsylvania Ave & Atlantic Ave,40.6760,-73.8960,5.1,East New York,28600,33.5,28.2,9100,91,Significantly Hotter
+BK-03,Knickerbocker Ave & Myrtle Ave,40.6980,-73.9260,4.7,Bushwick,32100,31.2,26.8,8900,88,Significantly Hotter
+BK-04,Fulton St & Nostrand Ave,40.6805,-73.9499,4.2,Bedford-Stuyvesant,35800,33.8,25.1,9600,84,Moderately Hotter
+BK-05,5th Ave & 44th St,40.6515,-74.0040,3.6,Sunset Park,29400,34.1,23.5,7200,78,Moderately Hotter
+BK-06,Mermaid Ave & Stillwell Ave,40.5755,-73.9820,3.2,Coney Island,21200,42.6,34.8,8700,86,Moderately Hotter
+BK-07,Utica Ave & Eastern Pkwy,40.6695,-73.9310,2.8,Crown Heights,30500,35.0,22.4,6900,72,Moderately Hotter
+BK-08,Van Brunt St & Pioneer St,40.6780,-74.0110,2.1,Red Hook,11200,36.5,29.1,3800,68,Near City Reference
+BK-09,Flatbush Ave & Church Ave,40.6500,-73.9590,1.8,Flatbush,41200,35.7,24.0,9800,65,Near City Reference
+BK-10,Fulton St & Jay St,40.6925,-73.9870,1.1,Downtown Brooklyn,18900,33.2,38.2,3900,60,Near City Reference
+BK-11,Bedford Ave & Grand St,40.7145,-73.9615,0.4,Williamsburg,33100,31.8,18.5,3100,48,Near City Reference
+BK-12,Montague St & Hicks St,40.6950,-73.9960,-1.2,Brooklyn Heights,16400,39.2,14.2,1600,32,Cooler than Reference
+BK-13,Prospect Park West & 9th St,40.6660,-73.9770,-3.1,Park Slope,36800,37.4,11.5,2200,20,Cooler than Reference
