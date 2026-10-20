@@ -389,68 +389,6 @@ st.markdown("<hr style='border-color: #E2E8F0; margin: 24px 0 16px 0;'>", unsafe
 render_priority_table(df_intersections, selected_id=st.session_state["selected_intersection_id"])
 
 
-# -----------------------------------------------------------------------------
-# 12. PERSONA-SPECIFIC QUESTIONS (HANDOFF FOR SCREEN 2: AI PLANNING COPILOT)
-# -----------------------------------------------------------------------------
-st.markdown("<hr style='border-color: #E2E8F0; margin: 24px 0 16px 0;'>", unsafe_allow_html=True)
-
-st.markdown("""
-    <div style="margin-bottom: 8px;">
-        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0F172A;">
-            Questions to Explore with HeatShield AI
-        </h3>
-        <p style="margin: 2px 0 12px 0; color: #64748B; font-size: 0.82rem;">
-            Click a persona-tailored question to stage it in session state for the <strong>AI Planning Copilot</strong> (Screen 2).
-        </p>
-    </div>
-""", unsafe_allow_html=True)
-
-persona_questions = {
-    "City Planner": [
-        "Where should we establish three cooling centers this summer?",
-        "Why is this intersection hotter than nearby locations two blocks north?",
-        "Which communities should receive capital resilience investment first?"
-    ],
-    "Emergency Management Officer": [
-        "Which intersections should receive hydration trucks tomorrow?",
-        "Where should senior wellness checks be prioritized during peak heat?",
-        "Which communities have high heat exposure and limited vehicle access?"
-    ],
-    "Sustainability / Urban Forestry Officer": [
-        "Which locations should be evaluated for urban tree canopy expansion?",
-        "Where does impervious surface contribute most to microclimate heat?",
-        "Which unshaded commercial corridors are primary candidates for cool pavement?"
-    ]
-}
-
-questions = persona_questions.get(st.session_state["selected_persona"], persona_questions["City Planner"])
-q_col1, q_col2, q_col3 = st.columns(3)
-
-for idx, (col, q_text) in enumerate(zip([q_col1, q_col2, q_col3], questions)):
-    with col:
-        if st.button(f"💬 {q_text}", key=f"btn_q_{idx}", use_container_width=True):
-            st.session_state["selected_question"] = q_text
-            st.toast(f"Staged question for Copilot: '{q_text}'", icon="🤖")
-
-if st.session_state["selected_question"]:
-    st.markdown(f"""
-        <div style="background-color: #F0FDF4; border: 1px solid #86EFAC; border-radius: 8px; padding: 12px 16px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">
-                    Ready for AI Planning Copilot (Screen 2)
-                </span>
-                <p style="margin: 2px 0 0 0; color: #14532D; font-weight: 600; font-size: 0.88rem;">
-                    "{st.session_state['selected_question']}"
-                </p>
-                <span style="font-size: 0.72rem; color: #15803D;">
-                    Context attached: Persona = <strong>{st.session_state['selected_persona']}</strong> | Target Location = <strong>{st.session_state['selected_intersection_id']} ({st.session_state['selected_city']})</strong>
-                </span>
-            </div>
-            <span style="background-color: #16A34A; color: white; font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 6px;">
-                STAGED IN SESSION STATE
-            </span>
-        </div>
-    """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
