@@ -86,28 +86,6 @@ Predicted Heat Offset (°F)
 </div>
 """, unsafe_allow_html=True)
 
-    # Agent Recommendation Overlay if applicable
-    if rec_matched and show_recommendations:
-        agency = rec_matched.get("agency", "")
-        cls = "agency-nycem" if "NYCEM" in agency else ("agency-dohmh" if "DOHMH" in agency else "agency-parks")
-        st.markdown(f"""<div style="background-color: #F8FAFC; border-left: 3px solid #1769E0; padding: 10px 12px; border-radius: 0 6px 6px 0; margin-bottom: 10px;">
-<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-<span style="font-size: 0.72rem; font-weight: 700; color: #1E3A8A; text-transform: uppercase;">
-🤖 AI Agent Recommendation (Provisional)
-</span>
-<span class="agency-badge {cls}" style="margin: 0; padding: 2px 6px; font-size: 0.68rem;">{agency}</span>
-</div>
-<strong style="color: #0F172A; font-size: 0.84rem;">{rec_matched['intervention_title']}</strong>
-<p style="margin: 3px 0 0 0; color: #475569; font-size: 0.76rem; line-height: 1.35;">
-{rec_matched['reason']}
-</p>
-<div style="font-size: 0.68rem; color: #64748B; margin-top: 4px;">
-* Straight-line 500 m senior walking catchment ring activated.
-</div>
-</div>""", unsafe_allow_html=True)
-    elif show_recommendations:
-        st.markdown("""<div style="background-color: #F8FAFC; padding: 8px 10px; border-radius: 6px; font-size: 0.74rem; color: #64748B; margin-bottom: 10px;">
-ℹ️ <em>Not currently prioritized for immediate multi-agency cooling resource dispatch.</em>
-</div>""", unsafe_allow_html=True)
+
 
     st.markdown("</div>", unsafe_allow_html=True)
