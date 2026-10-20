@@ -339,20 +339,11 @@ else:
     p_info = persona_context[st.session_state["selected_persona"]]
 
     st.markdown(f"""<div class="focus-hero-card" style="border-left: 5px solid {p_info['badge_color']};">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-    <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.94rem; padding: 5px 14px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">
-    {p_info['icon']} Persona: {st.session_state['selected_persona']}
+    <div class="focus-meta-grid" style="margin-top: 0;">
+    <div class="focus-meta-item" style="justify-content: center; align-items: flex-start;">
+    <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.92rem; padding: 8px 16px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 7px; border: 1px solid {p_info['badge_color']}30; white-space: nowrap;">
+    {p_info['icon']} PERSONA: {st.session_state['selected_persona'].upper()}
     </span>
-    </div>
-    <span style="font-size: 0.88rem; color: #475569; font-weight: 600; background: #F1F5F9; padding: 5px 14px; border-radius: 6px;">
-    🏛️ Lead Agency: <strong style="color: #0F172A;">{p_info['agency']}</strong>
-    </span>
-    </div>
-    <div class="focus-meta-grid">
-    <div class="focus-meta-item">
-    <span class="focus-meta-label">Persona:</span>
-    <span class="focus-meta-val" style="font-weight: 700; color: #0F172A;">{p_info['persona_title']}</span>
     </div>
     <div class="focus-meta-item">
     <span class="focus-meta-label">Lead Agency:</span>
@@ -382,7 +373,7 @@ else:
     # -----------------------------------------------------------------------------
     # 9. MAP INTERACTION CONTROLS (DESIGNER-POLISHED ALIGNMENT & TYPOGRAPHY)
     # -----------------------------------------------------------------------------
-    control_col1, control_col2 = st.columns([1.65, 1.0], gap="medium")
+    control_col1, control_col2 = st.columns([1.0, 1.0], gap="medium")
 
     with control_col1:
         st.markdown("""
@@ -439,7 +430,7 @@ else:
     # -----------------------------------------------------------------------------
     # 10. MAIN SECTION: FOLIUM HEAT MAP & DETAILS / EXPLANATIONS PANEL
     # -----------------------------------------------------------------------------
-    map_col, details_col = st.columns([1.65, 1.0], gap="medium")
+    map_col, details_col = st.columns([1.0, 1.0], gap="medium")
 
     with map_col:
         st.markdown(f"""
