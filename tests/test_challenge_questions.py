@@ -19,6 +19,20 @@ from agent.tools import (
 
 
 class TestChallengeQuestions(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import os
+        cls._prev_llm = os.environ.get("DISABLE_LIVE_LLM")
+        os.environ["DISABLE_LIVE_LLM"] = "1"
+
+    @classmethod
+    def tearDownClass(cls):
+        import os
+        if cls._prev_llm is None:
+            os.environ.pop("DISABLE_LIVE_LLM", None)
+        else:
+            os.environ["DISABLE_LIVE_LLM"] = cls._prev_llm
+
     def setUp(self):
         self.forecast_high_f = 98.0
 

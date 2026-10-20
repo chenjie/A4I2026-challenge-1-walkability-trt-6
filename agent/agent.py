@@ -12,7 +12,42 @@ Compatible with:
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Any
+
+# Load environment variables from .env if present
+try:
+    from dotenv import load_dotenv
+
+    _env_path = Path(__file__).resolve().parent.parent / ".env"
+    if _env_path.exists():
+        load_dotenv(_env_path)
+    else:
+        load_dotenv()
+except ImportError:
+    pass
+
+# Ensure Vertex AI or Gemini credentials are active
+def _configure_model_credentials() -> None:
+    if os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"):
+        return
+
+    project = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    if not project:
+        try:
+            import google.auth
+            _, detected_project = google.auth.default()
+            if detected_project:
+                project = detected_project
+                os.environ["GOOGLE_CLOUD_PROJECT"] = project
+        except Exception:
+            pass
+
+    if project:
+        os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "true")
+        os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "us-central1")
+
+_configure_model_credentials()
 
 from .tools import (
     analyze_heat_frequency,
