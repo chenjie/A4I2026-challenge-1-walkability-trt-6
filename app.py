@@ -344,9 +344,6 @@ else:
     <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.94rem; padding: 5px 14px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">
     {p_info['icon']} Persona: {st.session_state['selected_persona']}
     </span>
-    <span style="font-size: 0.86rem; font-weight: 700; padding: 4px 12px; border-radius: 4px; {p_info['zoom_pill_style']}">
-    {p_info['zoom_desc']}
-    </span>
     </div>
     <span style="font-size: 0.88rem; color: #475569; font-weight: 600; background: #F1F5F9; padding: 5px 14px; border-radius: 6px;">
     🏛️ Lead Agency: <strong style="color: #0F172A;">{p_info['agency']}</strong>
@@ -453,9 +450,6 @@ else:
                     </h3>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; {p_info['zoom_pill_style']}">
-                        {p_info['zoom_desc']}
-                    </span>
                     <span style="font-size: 0.72rem; color: #64748B;">NOAA Campaign Canvas</span>
                 </div>
             </div>
