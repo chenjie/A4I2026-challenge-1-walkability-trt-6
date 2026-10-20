@@ -31,7 +31,8 @@ from components.heat_explanations import render_heat_explanations
 from components.priority_table import render_priority_table
 from components.historical_heat import render_historical_heat
 
-# Screen 3 Main Screen Logic
+# Screen 2 & 3 Main Screen Logic
+from screens.screen_2_copilot import render_screen_2
 from screens.screen_3_dispatch_equity import render_screen_3
 
 # -----------------------------------------------------------------------------
@@ -112,43 +113,38 @@ with st.sidebar:
         qp = str(st.query_params["screen"]).lower()
         if "3" in qp or "equity" in qp or "dispatch" in qp:
             st.session_state["active_screen"] = "Screen 3"
+        elif "2" in qp or "copilot" in qp or "agent" in qp:
+            st.session_state["active_screen"] = "Screen 2"
         elif "1" in qp or "heat" in qp:
             st.session_state["active_screen"] = "Screen 1"
 
-    is_screen_1 = (st.session_state.get("active_screen", "Screen 1") == "Screen 1")
+    active_screen = st.session_state.get("active_screen", "Screen 1")
 
     st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 6px;'>Navigation</p>", unsafe_allow_html=True)
 
-    if is_screen_1:
-        st.markdown("""
-            <a href="?screen=1" target="_self" class="nav-item nav-active">
-                <span>🔥 Heat Intelligence</span>
-                <span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>
-            </a>
-            <div class="nav-item nav-inactive">
-                <span>🤖 AI Planning Copilot</span>
-                <span class="badge-soon">Coming Soon</span>
-            </div>
-            <a href="?screen=3" target="_self" class="nav-item nav-inactive">
-                <span>⚖️ Equity Audit</span>
-                <span class="badge-soon">Screen 3</span>
-            </a>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown("""
-            <a href="?screen=1" target="_self" class="nav-item nav-inactive">
-                <span>🔥 Heat Intelligence</span>
-                <span class="badge-soon">Screen 1</span>
-            </a>
-            <div class="nav-item nav-inactive">
-                <span>🤖 AI Planning Copilot</span>
-                <span class="badge-soon">Coming Soon</span>
-            </div>
-            <a href="?screen=3" target="_self" class="nav-item nav-active">
-                <span>⚖️ Equity Audit</span>
-                <span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>
-            </a>
-        """, unsafe_allow_html=True)
+    s1_class = "nav-item nav-active" if active_screen == "Screen 1" else "nav-item nav-inactive"
+    s1_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 1" else '<span class="badge-soon">Screen 1</span>'
+
+    s2_class = "nav-item nav-active" if active_screen == "Screen 2" else "nav-item nav-inactive"
+    s2_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 2" else '<span class="badge-soon" style="background:#0284C7; color:white;">Screen 2</span>'
+
+    s3_class = "nav-item nav-active" if active_screen == "Screen 3" else "nav-item nav-inactive"
+    s3_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 3" else '<span class="badge-soon">Screen 3</span>'
+
+    st.markdown(f"""
+        <a href="?screen=1" target="_self" class="{s1_class}">
+            <span>🔥 Heat Intelligence</span>
+            {s1_badge}
+        </a>
+        <a href="?screen=2" target="_self" class="{s2_class}">
+            <span>🤖 AI Planning Copilot</span>
+            {s2_badge}
+        </a>
+        <a href="?screen=3" target="_self" class="{s3_class}">
+            <span>⚖️ Equity Audit</span>
+            {s3_badge}
+        </a>
+    """, unsafe_allow_html=True)
     
     st.markdown("<hr style='border-color: #1E293B; margin: 20px 0 14px 0;'>", unsafe_allow_html=True)
     
@@ -168,7 +164,8 @@ with st.sidebar:
     persona_options = [
         "City Planner",
         "Emergency Management Officer",
-        "Sustainability / Urban Forestry Officer"
+        "Sustainability / Urban Forestry Officer",
+        "Vulnerable Resident / Live Location"
     ]
     curr_persona_idx = persona_options.index(st.session_state["selected_persona"]) if st.session_state["selected_persona"] in persona_options else 0
     selected_persona_val = st.selectbox(
@@ -234,6 +231,8 @@ if st.session_state["selected_intersection_id"] not in all_ids:
 # -----------------------------------------------------------------------------
 if st.session_state["active_screen"] == "Screen 3":
     render_screen_3()
+elif st.session_state["active_screen"] == "Screen 2":
+    render_screen_2()
 else:
     # -----------------------------------------------------------------------------
     # 5. HEADER SECTION (SCREEN 1)

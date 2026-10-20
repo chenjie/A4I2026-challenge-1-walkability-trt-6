@@ -8,7 +8,10 @@ and execute with zero errors or unhandled exceptions.
 import sys
 import unittest
 
-from app import orchestrate_agent_turn
+try:
+    from api_server import orchestrate_agent_turn
+except ImportError:
+    from agent.persona_agent import execute_persona_agent_turn as orchestrate_agent_turn
 from agent.tools import (
     analyze_heat_frequency,
     compare_candidate_sites,
