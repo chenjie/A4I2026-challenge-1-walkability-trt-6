@@ -8,15 +8,27 @@ community vulnerability, and vehicle access.
 import streamlit as st
 import pandas as pd
 
-def render_priority_table(df: pd.DataFrame, selected_id: str) -> None:
-    """Renders ranked dataframe table sorted by priority score."""
-    st.markdown("""
+def render_priority_table(df: pd.DataFrame, selected_id: str, persona: str = "City Planner") -> None:
+    """Renders ranked dataframe table sorted dynamically by persona priorities."""
+    if persona == "Emergency Management Officer":
+        sorted_df = df.sort_values(by=["predicted_offset_f", "priority_score"], ascending=[False, False]).reset_index(drop=True)
+        sort_label = "Sorted by Acute Heat Offset & Emergency Vulnerability · Tactical Dispatch"
+    elif persona == "Sustainability / Urban Forestry Officer":
+        sorted_df = df.sort_values(by="predicted_offset_f", ascending=False).reset_index(drop=True)
+        sort_label = "Sorted by Microclimate Heat Deficit · Canopy & Cool Pavement Targets"
+    else:
+        sorted_df = df.sort_values(by="priority_score", ascending=False).reset_index(drop=True)
+        sort_label = "Sorted by Multi-Factor Priority Score · Permanent Facility Siting"
+
+    st.markdown(f"""
         <div style="margin-top: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
                 <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0F172A;">
                     Priority Heat Locations
                 </h3>
-                <span style="font-size: 0.74rem; color: #64748B;">Sorted by Priority Score (Default)</span>
+                <span style="font-size: 0.74rem; color: #1E40AF; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+                    {sort_label}
+                </span>
             </div>
             <p style="margin: 0 0 12px 0; color: #64748B; font-size: 0.80rem;">
                 Heuristic prioritization matrix combining positive microclimate heat offset, socio-demographic vulnerability, and transit dependency.
@@ -24,8 +36,6 @@ def render_priority_table(df: pd.DataFrame, selected_id: str) -> None:
         </div>
     """, unsafe_allow_html=True)
 
-    # Sort by priority score descending
-    sorted_df = df.sort_values(by="priority_score", ascending=False).reset_index(drop=True)
     sorted_df["Rank"] = [f"#{i+1}" for i in range(len(sorted_df))]
 
     display_df = sorted_df[[

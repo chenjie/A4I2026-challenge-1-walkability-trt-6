@@ -331,4 +331,173 @@ a.nav-item:hover {
     text-decoration: none !important;
 }
 
+/* ==========================================================================
+   Widget Typography & Light Theme Enforcement (Google Cloud Design System)
+   ========================================================================== */
 
+/* Main Container Widget Labels */
+div[data-testid="stMainBlockContainer"] div[data-testid="stWidgetLabel"] label,
+div[data-testid="stMainBlockContainer"] div[data-testid="stWidgetLabel"] p,
+div[data-testid="stMainBlockContainer"] label {
+    color: #0F172A !important;
+    font-weight: 700 !important;
+    font-size: 0.86rem !important;
+    letter-spacing: -0.01em;
+}
+
+/* Selectbox Container Styling */
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] {
+    background-color: #FFFFFF !important;
+    border-radius: 8px !important;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] > div {
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    color: #0F172A !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+    min-height: 42px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease-in-out;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"]:hover > div,
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"]:focus-within > div {
+    border-color: #1A73E8 !important;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2) !important;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] span {
+    color: #0F172A !important;
+    font-weight: 600 !important;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] svg {
+    fill: #475569 !important;
+}
+
+/* Selectbox Dropdown Menu Popover */
+div[data-baseweb="popover"],
+div[data-baseweb="popover"] ul,
+div[data-baseweb="menu"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+div[data-baseweb="popover"] li[role="option"] {
+    color: #0F172A !important;
+    font-size: 0.84rem !important;
+    padding: 8px 12px !important;
+}
+
+div[data-baseweb="popover"] li[role="option"]:hover,
+div[data-baseweb="popover"] li[aria-selected="true"] {
+    background-color: #EFF6FF !important;
+    color: #1A73E8 !important;
+    font-weight: 600 !important;
+}
+
+/* Slider Typography & Track */
+div[data-testid="stSlider"] div[data-testid="stWidgetLabel"] {
+    margin-bottom: 2px !important;
+}
+
+div[data-testid="stSlider"] div[data-testid="stTickBar"] span {
+    color: #64748B !important;
+    font-size: 0.74rem !important;
+}
+
+div[data-testid="stSlider"] div[role="slider"] {
+    background-color: #EA580C !important;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2) !important;
+}
+
+/* Control Toolbar Cards */
+.control-card {
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    height: 100%;
+}
+
+/* Executive Focus Card on Top of Main Screen */
+.focus-hero-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 8px 0 16px 0;
+    box-shadow: 0 2px 10px rgba(20, 36, 58, 0.05);
+    border: 1px solid #E2E8F0;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.focus-meta-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr 1.6fr 1.8fr;
+    gap: 12px 16px;
+    background: #F8FAFC;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    margin-top: 8px;
+}
+
+@media (max-width: 1200px) {
+    .focus-meta-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .focus-meta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.focus-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.focus-meta-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748B;
+}
+
+.focus-meta-val {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #0F172A;
+    line-height: 1.35;
+}
+
+/* Sidebar Selectbox Custom Styling for Dark Background */
+section[data-testid="stSidebar"] div[data-baseweb="select"] {
+    background-color: #1E293B !important;
+    border-radius: 8px !important;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+    background-color: #1E293B !important;
+    border: 1px solid #334155 !important;
+    border-radius: 8px !important;
+    color: #F8FAFC !important;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="select"] span {
+    color: #F8FAFC !important;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="select"] svg {
+    fill: #94A3B8 !important;
+}
