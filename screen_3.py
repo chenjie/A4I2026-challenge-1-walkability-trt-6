@@ -11,7 +11,6 @@ Features:
   - Interactive Leaflet dispatch map with 0.5 km (500m) walking coverage rings and secondary buffers
   - Spatial equity gaps identification (unserved high-vulnerability hotspots)
   - Algorithmic Title VI / Justice40 equity audit scorecards and demographic benchmarks
-  - BigQuery ML ML.EXPLAIN_PREDICT feature attribution inspector & agency justifications
   - Downloadable Council Action Proposal (.md), CAD Dispatch Manifest (.csv), and Spec (.json)
 """
 

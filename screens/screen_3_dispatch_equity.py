@@ -4,7 +4,7 @@ Screen 3: Government Cooling Dispatch & Equity Audit
 Converts AI recommendations into actionable interventions.
 Equips city emergency managers, public health directors, and city council members
 with multi-agency resource allocations, 0.5 km coverage walking buffers,
-equity disparity benchmarks, BQML feature attributions, and council briefing exports.
+equity disparity benchmarks, and council briefing exports.
 """
 
 import streamlit as st
@@ -15,14 +15,12 @@ from services.data_service import (
     get_intersections,
     get_intersection_details,
     get_agent_recommendations,
-    get_heat_explanations,
     get_equity_audit,
     get_equity_gaps
 )
 from components.dispatch_map import render_dispatch_map
 from components.dispatch_roster import render_dispatch_roster
 from components.equity_audit import render_equity_audit
-from components.dispatch_explanations import render_dispatch_explanations
 from components.action_proposal import render_action_proposal
 
 def render_screen_3() -> None:
@@ -75,9 +73,8 @@ def render_screen_3() -> None:
 
     selected_id = st.session_state["selected_intersection_id"]
     selected_record = get_intersection_details(selected_id, city_key)
-    explanations = get_heat_explanations(selected_id)
 
-    # 2. Main Two-Column Layout: Map on Left, Assignments & Explanations on Right
+    # 2. Main Two-Column Layout: Map on Left, Assignments Roster on Right
     map_col, roster_col = st.columns([1.15, 0.85])
 
     with map_col:
@@ -110,15 +107,6 @@ def render_screen_3() -> None:
             show_secondary_rings=show_secondary_rings,
             show_gaps=show_gaps,
             city_key=city_key
-        )
-
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-        # BigQuery ML Explanations under the map
-        render_dispatch_explanations(
-            explanations=explanations,
-            selected_record=selected_record,
-            recommendations=recommendations,
-            data_mode=data_mode
         )
 
     with roster_col:
