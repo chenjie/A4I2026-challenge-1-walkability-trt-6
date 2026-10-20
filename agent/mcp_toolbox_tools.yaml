@@ -1,0 +1,136 @@
+# ============================================================================
+# Google MCP Toolbox for Databases (https://github.com/googleapis/mcp-toolbox)
+# Configuration for A4I 2026 - Challenge 1: Urban Heat Resilience (Brooklyn)
+#
+# Run locally or on Cloud Run (with --min-instances=1):
+#   toolbox --tools-file agent/mcp_toolbox_tools.yaml --port 5000
+# ============================================================================
+
+sources:
+  a4i_bigquery:
+    kind: bigquery
+    project: ${GOOGLE_CLOUD_PROJECT}
+    location: US
+
+tools:
+  bq_campaign_overview:
+    kind: bigquery-sql
+    source: a4i_bigquery
+    description: >
+      Get overall summary statistics of the NOAA Heat Watch campaign in a4i_climate.heat_observations,
+      including row count, city mean temperature, min/max temperature, and intra-city temperature spread.
+    statement: |
+      SELECT
+        city,
+        COUNT(*) AS observation_count,
+        ROUND(AVG(temp_f), 2) AS city_avg_temp_f,
+        ROUND(MIN(temp_f), 1) AS min_temp_f,
+        ROUND(MAX(temp_f), 1) AS max_temp_f,
+        ROUND(MAX(temp_f) - MIN(temp_f), 1) AS intra_city_spread_f
+      FROM `a4i_climate.heat_observations`
+      GROUP BY city
+
+  bq_explain_predict_top_tracts:
+    kind: bigquery-sql
+    source: a4i_bigquery
+    description: >
+      Query top N census tracts from `a4i_climate.tract_predictions_explained`, returning the
+      BigQuery ML predicted heat offset (`predicted_offset_f`), `ML.EXPLAIN_PREDICT` feature attributions,
+      canopy deficit, and census vulnerability indicators (`no_vehicle_pct`, `poverty_pct`, `over_65_pct`).
+    parameters:
+      - name: limit_n
+        type: integer
+        description: Number of top priority census tracts to return (e.g., 5).
+    statement: |
+      SELECT
+        geo_id,
+        latitude,
+        longitude,
+        predicted_offset_f,
+        priority_score,
+        canopy_deficit_pct,
+        trees_per_km2,
+        total_pop,
+        pop_over_65,
+        over_65_pct,
+        poverty_pct,
+        no_vehicle_pct,
+        median_income,
+        recommended_intervention,
+        top_feature_attributions
+      FROM `a4i_climate.tract_predictions_explained`
+      ORDER BY priority_score DESC
+      LIMIT @limit_n
+
+  bq_station_heat_frequency:
+    kind: bigquery-sql
+    source: a4i_bigquery
+    description: >
+      Query 7 years of NOAA GHCN-Daily weather station history (`a4i_climate.station_daily_temps`)
+      to count how many days per year cross a dangerous heat threshold when a local microclimate
+      offset (`offset_f`) is added to the regional station daily high.
+    parameters:
+      - name: offset_f
+        type: float
+        description: Predicted temperature offset in degrees Fahrenheit (e.g., 5.4).
+      - name: threshold_f
+        type: float
+        description: Dangerous temperature threshold in degrees Fahrenheit (e.g., 95.0).
+    statement: |
+      WITH daily_max AS (
+        SELECT
+          observation_date,
+          EXTRACT(YEAR FROM observation_date) AS obs_year,
+          MAX(max_temp_f) AS station_max_f
+        FROM `a4i_climate.station_daily_temps`
+        GROUP BY observation_date, obs_year
+      )
+      SELECT
+        obs_year,
+        COUNTIF(station_max_f >= @threshold_f) AS station_baseline_days,
+        COUNTIF(station_max_f + @offset_f >= @threshold_f) AS local_microclimate_days,
+        ROUND(MAX(station_max_f) + @offset_f, 1) AS peak_local_temp_f
+      FROM daily_max
+      GROUP BY obs_year
+      ORDER BY obs_year ASC
+
+  bq_post_hoc_equity_audit:
+    kind: bigquery-sql
+    source: a4i_bigquery
+    description: >
+      Audit the top recommended census tracts against the city-wide average across poverty rate,
+      carless household rate, seniors 65+ share, tree canopy density, and post-hoc ACS racial composition.
+    parameters:
+      - name: top_n
+        type: integer
+        description: Number of top recommended tracts to audit (e.g., 3 or 5).
+    statement: |
+      WITH ranked AS (
+        SELECT
+          p.*,
+          a.bipoc_pct,
+          a.black_pct,
+          a.hispanic_pct,
+          ROW_NUMBER() OVER (ORDER BY p.priority_score DESC) AS rn
+        FROM `a4i_climate.tract_predictions_explained` p
+        LEFT JOIN `a4i_climate.tract_equity_audit_lookup` a
+          ON p.geo_id = a.geo_id
+      )
+      SELECT
+        CASE WHEN rn <= @top_n THEN 'Top Recommended Tracts' ELSE 'Rest of City Baseline' END AS cohort,
+        COUNT(*) AS tract_count,
+        ROUND(AVG(predicted_offset_f), 2) AS avg_offset_f,
+        ROUND(AVG(poverty_pct), 1) AS avg_poverty_pct,
+        ROUND(AVG(no_vehicle_pct), 1) AS avg_no_vehicle_pct,
+        ROUND(AVG(over_65_pct), 1) AS avg_over_65_pct,
+        ROUND(AVG(trees_per_km2), 1) AS avg_trees_per_km2,
+        ROUND(AVG(bipoc_pct), 1) AS avg_bipoc_pct
+      FROM ranked
+      GROUP BY cohort
+
+toolsets:
+  climate_planner_toolset:
+    - bq_campaign_overview
+    - bq_explain_predict_top_tracts
+    - bq_station_heat_frequency
+    - bq_post_hoc_equity_audit
