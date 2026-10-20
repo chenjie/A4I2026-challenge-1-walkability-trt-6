@@ -278,11 +278,21 @@ st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
-# 9. MAP INTERACTION CONTROLS
+# 9. MAP INTERACTION CONTROLS (DESIGNER-POLISHED ALIGNMENT & TYPOGRAPHY)
 # -----------------------------------------------------------------------------
-control_col1, control_col2 = st.columns([1.2, 1.2], gap="large")
+control_col1, control_col2 = st.columns([1.65, 1.0], gap="medium")
 
 with control_col1:
+    st.markdown("""
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+            <span style="font-size: 0.84rem; font-weight: 700; color: #0F172A;">
+                🌡️ City Forecast High (Illustrative Scenario)
+            </span>
+            <span style="font-size: 0.72rem; color: #64748B;">
+                Base Reference Temperature
+            </span>
+        </div>
+    """, unsafe_allow_html=True)
     forecast_high_val = st.slider(
         "City Forecast High (Illustrative Scenario)",
         min_value=90,
@@ -290,12 +300,22 @@ with control_col1:
         value=st.session_state["forecast_high_f"],
         step=1,
         format="%d°F",
+        label_visibility="collapsed",
         help="Illustrative scenario slider. Combines with predicted offset: scenario_value = forecast_high_f + predicted_offset_f. Not a validated street-level temperature forecast."
     )
     st.session_state["forecast_high_f"] = forecast_high_val
 
 with control_col2:
-    # Synchronized Dropdown for reliable selection
+    st.markdown("""
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+            <span style="font-size: 0.84rem; font-weight: 700; color: #0F172A;">
+                📍 Select Intersection to Inspect
+            </span>
+            <span style="font-size: 0.72rem; color: #1769E0; font-weight: 600;">
+                Map Synchronized
+            </span>
+        </div>
+    """, unsafe_allow_html=True)
     dropdown_labels = [f"{r['intersection_id']}: {r['neighborhood']} ({r['intersection_name']})" for _, r in df_intersections.iterrows()]
     curr_index = 0
     for idx, r in df_intersections.iterrows():
@@ -307,6 +327,7 @@ with control_col2:
         "Select Intersection to Inspect",
         options=dropdown_labels,
         index=curr_index,
+        label_visibility="collapsed",
         help="Synchronized with map markers. Updates Intersection Intelligence and Feature Attributions."
     )
     # Extract selected ID

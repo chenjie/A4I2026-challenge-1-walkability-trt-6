@@ -230,3 +230,99 @@ section[data-testid="stSidebar"] .stSelectbox label {
     font-size: 0.80rem;
     color: #166534;
 }
+
+/* ==========================================================================
+   Widget Typography & Light Theme Enforcement (Google Cloud Design System)
+   ========================================================================== */
+
+/* Main Container Widget Labels */
+div[data-testid="stMainBlockContainer"] div[data-testid="stWidgetLabel"] label,
+div[data-testid="stMainBlockContainer"] div[data-testid="stWidgetLabel"] p,
+div[data-testid="stMainBlockContainer"] label {
+    color: #0F172A !important;
+    font-weight: 700 !important;
+    font-size: 0.86rem !important;
+    letter-spacing: -0.01em;
+}
+
+/* Selectbox Container Styling */
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] {
+    background-color: #FFFFFF !important;
+    border-radius: 8px !important;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] > div {
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    color: #0F172A !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+    min-height: 42px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease-in-out;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"]:hover > div,
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"]:focus-within > div {
+    border-color: #1A73E8 !important;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2) !important;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] span {
+    color: #0F172A !important;
+    font-weight: 600 !important;
+}
+
+div[data-testid="stMainBlockContainer"] div[data-baseweb="select"] svg {
+    fill: #475569 !important;
+}
+
+/* Selectbox Dropdown Menu Popover */
+div[data-baseweb="popover"],
+div[data-baseweb="popover"] ul,
+div[data-baseweb="menu"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+div[data-baseweb="popover"] li[role="option"] {
+    color: #0F172A !important;
+    font-size: 0.84rem !important;
+    padding: 8px 12px !important;
+}
+
+div[data-baseweb="popover"] li[role="option"]:hover,
+div[data-baseweb="popover"] li[aria-selected="true"] {
+    background-color: #EFF6FF !important;
+    color: #1A73E8 !important;
+    font-weight: 600 !important;
+}
+
+/* Slider Typography & Track */
+div[data-testid="stSlider"] div[data-testid="stWidgetLabel"] {
+    margin-bottom: 2px !important;
+}
+
+div[data-testid="stSlider"] div[data-testid="stTickBar"] span {
+    color: #64748B !important;
+    font-size: 0.74rem !important;
+}
+
+div[data-testid="stSlider"] div[role="slider"] {
+    background-color: #EA580C !important;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2) !important;
+}
+
+/* Control Toolbar Cards */
+.control-card {
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    height: 100%;
+}
+
