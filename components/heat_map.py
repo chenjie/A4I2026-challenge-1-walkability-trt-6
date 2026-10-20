@@ -2,8 +2,14 @@
 Interactive Brooklyn Heat Map Component
 ---------------------------------------
 Built with Folium and streamlit-folium.
-Renders microclimate heat-offset markers, agency recommendations,
-and 0.5 km cooling catchment rings.
+Renders:
+  - Persona-driven dynamic zoom & focus
+  - Microclimate heat-offset markers (Group A)
+  - AI-Recommended priority locations (Group B)
+  - Proposed cooling intervention icons (Hydration Truck 🚚, Cooling Center ❄️, Tree Corridor 🌳)
+  - Approximate 500 m service coverage rings
+  - Rich recommendation popups with full planning disclosures
+  - Comprehensive two-group floating legend (Map Layers & AI Recommendations)
 """
 
 import streamlit as st
@@ -16,13 +22,13 @@ from typing import Dict, List, Any, Optional
 def get_offset_color(offset: float) -> str:
     """Returns hex color code based on predicted_offset_f."""
     if offset >= 5.0:
-        return "#DC2626"  # Crimson (+5.6°F)
+        return "#DC2626"  # Crimson (+5.6°F Brownsville)
     elif offset >= 3.5:
         return "#EA580C"  # Vibrant Orange
     elif offset >= 2.0:
         return "#F59E0B"  # Amber
     elif offset >= 0.0:
-        return "#EAB308"  # Warm Yellow
+        return "#EAB308"  # Warm Yellow / Neutral
     elif offset <= -2.5:
         return "#059669"  # Emerald Green (-3.1°F Park Slope)
     else:
@@ -34,17 +40,24 @@ def render_heat_map(
     selected_id: str,
     recommendations: List[Dict[str, Any]],
     show_recommendations: bool = True,
-    show_coverage: bool = True,
+    show_coverage: bool = False,
     forecast_high_f: int = 98,
     persona: str = "City Planner",
-    city_key: str = "brooklyn"
+    city_key: str = "brooklyn",
+    show_heat_markers: bool = True,
+    show_ai_recommended: bool = True,
+    show_cooling_resources: bool = True,
+    show_coverage_rings: bool = False
 ) -> Optional[str]:
     """
     Renders Folium Leaflet Map with Persona-driven Dynamic Zoom & Focus:
-      - City Planner: Zoomed OUT (11.5x) across entire city for facility siting.
-      - Emergency Management: Zoomed IN (13.8x) directly to acute heat hotspots.
-      - Sustainability: Mid-Zoom (12.6x) framing canopy deficit & pavement corridors.
+      - Layer toggles dynamically govern visibility of Heat Markers, AI Recs, Cooling Resources, and Coverage Rings.
+      - Floats comprehensive dual-group legend: Group A (Heat Offset) & Group B (Proposed Interventions).
     """
+    # Fallback to legacy argument names if only those were passed
+    effective_ai_rec = show_ai_recommended if show_ai_recommended is not None else show_recommendations
+    effective_coverage = show_coverage_rings if show_coverage_rings is not None else show_coverage
+
     # -------------------------------------------------------------------------
     # Persona-driven Dynamic Map Zoom and Centroid Focus
     # -------------------------------------------------------------------------
@@ -78,7 +91,7 @@ def render_heat_map(
         map_center = [40.6650, -73.9550]
         zoom_start = 11.5
 
-    # Initialize Folium Map with standard OpenStreetMap tiles (no API key required)
+    # Initialize Folium Map
     m = folium.Map(
         location=map_center,
         zoom_start=zoom_start,
@@ -90,44 +103,61 @@ def render_heat_map(
     # Dictionary of recommendations by ID for fast lookup
     rec_by_id = {r["intersection_id"]: r for r in recommendations}
 
-    # 1. Catchment Overlays Layer (0.5 km = 500m straight-line buffer)
-    if show_coverage and show_recommendations:
+    # -------------------------------------------------------------------------
+    # 1. Approximate Service Coverage Rings (500 m Straight-Line Buffer)
+    # -------------------------------------------------------------------------
+    if effective_coverage and recommendations:
         for rec in recommendations:
             matched = df[df["intersection_id"] == rec["intersection_id"]]
             if matched.empty:
                 continue
             row = matched.iloc[0]
             
-            # Distinct styling by agency / intervention
             agency = rec.get("agency", "")
-            if "NYCEM" in agency:
-                circle_color = "#DC2626"
-                fill_color = "#FCA5A5"
-            elif "DOHMH" in agency:
+            itype = rec.get("intervention", "").lower()
+
+            if "hydration" in itype or "truck" in itype:
+                circle_color = "#2563EB"
+                fill_color = "#93C5FD"
+                dash_style = "5, 5"
+                service_type = "Mobile Hydration Support"
+            elif "cooling" in itype or "center" in itype:
                 circle_color = "#1D4ED8"
                 fill_color = "#93C5FD"
+                dash_style = None
+                service_type = "Indoor Cooling Center"
             else:
                 circle_color = "#059669"
                 fill_color = "#86EFAC"
+                dash_style = "4, 4"
+                service_type = "Urban Shade Intervention"
 
             folium.Circle(
                 location=[row["latitude"], row["longitude"]],
-                radius=500,  # 0.5 km straight-line radius
+                radius=500,  # 0.5 km = 500 m straight-line radius
                 color=circle_color,
-                weight=1.5,
+                weight=1.8,
+                dash_array=dash_style,
                 fill=True,
                 fill_color=fill_color,
-                fill_opacity=0.22,
+                fill_opacity=0.20,
                 popup=folium.Popup(
-                    f"<b>Approximate 500 m straight-line coverage</b><br/>"
-                    f"Hub: {row['neighborhood']} ({rec['intervention_title']})<br/>"
-                    f"<em>* Note: Straight-line approximation, not verified walking distance.</em>",
-                    max_width=280
+                    f"<div style='font-family:-apple-system, sans-serif; font-size:12px; line-height:1.4;'>"
+                    f"<strong style='color:#0F172A; font-size:13px;'>Approximate 500 m Service Catchment</strong><br/>"
+                    f"<strong>Hub:</strong> {row['neighborhood']} ({rec['intervention_title']})<br/>"
+                    f"<strong>Service:</strong> {service_type}<br/>"
+                    f"<span style='color:#64748B; font-size:11px; margin-top:4px; display:block;'>"
+                    f"* Coverage rings show approximate 500 m straight-line distance, not verified walking routes or actual service accessibility."
+                    f"</span>"
+                    f"</div>",
+                    max_width=290
                 ),
-                tooltip=f"0.5 km Senior Walk Zone ({rec['agency']})"
+                tooltip=f"500 m Catchment: {rec['intervention_title']} ({rec.get('agency', 'Agency')})"
             ).add_to(m)
 
-    # 2. Main Intersection Markers
+    # -------------------------------------------------------------------------
+    # 2. Main Intersection Heat Markers & Recommendation Overlays
+    # -------------------------------------------------------------------------
     for _, row in df.iterrows():
         i_id = row["intersection_id"]
         lat = row["latitude"]
@@ -136,6 +166,7 @@ def render_heat_map(
         color = get_offset_color(offset)
         is_selected = (i_id == selected_id)
         is_recommended = (i_id in rec_by_id)
+        rec_info = rec_by_id.get(i_id)
 
         expected_temp = forecast_high_f + offset
         
@@ -147,94 +178,220 @@ def render_heat_map(
             f"Illustrative Scenario Temp: <strong>{expected_temp:.1f}°F</strong> (at {forecast_high_f}°F base)<br/>"
             f"Priority Score: <strong>{row['priority_score']}/100</strong>"
         )
+        if is_recommended and effective_ai_rec:
+            tooltip_html += f"<br/><strong style='color:#9333EA;'>🎯 Recommended by AI Copilot: {rec_info['intervention_title']}</strong>"
 
-        # Popup HTML
-        rec_info = rec_by_id.get(i_id)
-        rec_snippet = ""
-        if rec_info and show_recommendations:
-            rec_snippet = (
-                f"<div style='margin-top:6px; padding:4px 6px; background:#EFF6FF; border-left:3px solid #1769E0; font-size:11px;'>"
-                f"<strong>AI Recommendation:</strong> {rec_info['intervention_title']}<br/>"
-                f"<em>{rec_info['reason']}</em>"
-                f"</div>"
-            )
+        # Rich Popup HTML
+        rec_section = ""
+        if rec_info and effective_ai_rec:
+            itype = rec_info.get("intervention", "").lower()
+            icon_sym = "🚚" if "hydration" in itype else ("❄️" if "cooling" in itype else "🌳")
+            rec_section = f"""
+            <div style="margin-top: 8px; padding: 8px 10px; background: #EFF6FF; border-left: 3px solid #1769E0; border-radius: 4px;">
+                <div style="font-size: 10px; font-weight: 800; color: #1E40AF; text-transform: uppercase; letter-spacing: 0.04em;">
+                    {icon_sym} AI-Recommended Intervention
+                </div>
+                <div style="font-weight: 700; color: #0F172A; font-size: 12px; margin-top: 2px;">
+                    {rec_info['intervention_title']}
+                </div>
+                <div style="font-size: 11px; color: #334155; margin-top: 4px; line-height: 1.35;">
+                    <strong>Reason:</strong> {rec_info['reason']}
+                </div>
+                <div style="font-size: 10px; color: #64748B; margin-top: 6px; padding-top: 4px; border-top: 1px dashed #BFDBFE;">
+                    <strong>Source:</strong> Google ADK Planning Copilot (Illustrative)<br/>
+                    <em>* Proposed municipal intervention. Not an approved government dispatch.</em>
+                </div>
+            </div>
+            """
 
-        popup_html = (
-            f"<div style='font-family:sans-serif; font-size:12px; width:220px;'>"
-            f"<div style='font-weight:bold; font-size:13px; color:#0F172A;'>{i_id}: {row['neighborhood']}</div>"
-            f"<div style='color:#64748B; font-size:11px; margin-bottom:4px;'>{row['intersection_name']}</div>"
-            f"<div>Predicted Heat Offset: <b style='color:{color}; font-size:14px;'>{row['offset_str']}</b></div>"
-            f"<div>Vulnerable Pop: <b>{row['vuln_pop_str']}</b></div>"
-            f"<div>Zero-Vehicle Rate: <b>{row['no_veh_str']}</b></div>"
-            f"<div>Priority Score: <b>{row['priority_score']} ({row['risk_category']})</b></div>"
-            f"{rec_snippet}"
-            f"</div>"
-        )
+        popup_html = f"""
+        <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; width: 250px; line-height: 1.4;">
+            <div style="font-weight: 800; font-size: 13.5px; color: #0F172A; border-bottom: 1px solid #E2E8F0; padding-bottom: 4px; margin-bottom: 6px;">
+                {i_id} — {row['neighborhood']}
+            </div>
+            <div style="color: #64748B; font-size: 11px; margin-bottom: 6px;">{row['intersection_name']}</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                <span style="color: #475569;">Predicted Heat Offset:</span>
+                <strong style="color: {color}; font-size: 13px;">{row['offset_str']}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                <span style="color: #475569;">Vulnerable Pop:</span>
+                <strong>{row['vuln_pop_str']}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                <span style="color: #475569;">Zero-Vehicle Rate:</span>
+                <strong>{row['no_veh_str']}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                <span style="color: #475569;">Priority Score:</span>
+                <strong>{row['priority_score']} / 100 ({row['risk_category']})</strong>
+            </div>
+            {rec_section}
+        </div>
+        """
 
-        # Visual marker settings
-        marker_radius = 8 if not is_selected else 12
-        border_weight = 3 if is_selected else (2 if is_recommended else 1)
-        border_color = "#0F172A" if is_selected else ("#0284C7" if (is_recommended and show_recommendations) else "#FFFFFF")
+        # A. Heat Offset Circle Markers (Layer Toggle: show_heat_markers)
+        if show_heat_markers:
+            marker_radius = 8 if not is_selected else 12
+            border_weight = 3 if is_selected else (2 if (is_recommended and effective_ai_rec) else 1)
+            border_color = "#0F172A" if is_selected else ("#9333EA" if (is_recommended and effective_ai_rec) else "#FFFFFF")
 
-        folium.CircleMarker(
-            location=[lat, lon],
-            radius=marker_radius,
-            color=border_color,
-            weight=border_weight,
-            fill=True,
-            fill_color=color,
-            fill_opacity=0.90,
-            tooltip=folium.Tooltip(tooltip_html),
-            popup=folium.Popup(popup_html, max_width=250)
-        ).add_to(m)
+            folium.CircleMarker(
+                location=[lat, lon],
+                radius=marker_radius,
+                color=border_color,
+                weight=border_weight,
+                fill=True,
+                fill_color=color,
+                fill_opacity=0.90,
+                tooltip=folium.Tooltip(tooltip_html),
+                popup=folium.Popup(popup_html, max_width=280)
+            ).add_to(m)
 
-        # Highlight ring for selected location
+        # B. AI-Selected Priority Marker (Layer Toggle: show_ai_recommended)
+        if is_recommended and effective_ai_rec:
+            folium.CircleMarker(
+                location=[lat, lon],
+                radius=16,
+                color="#9333EA",
+                weight=2.5,
+                dash_array="3, 3",
+                fill=False,
+                tooltip=f"🎯 AI-Selected Priority Location: {i_id} ({row['neighborhood']})",
+                popup=folium.Popup(popup_html, max_width=280)
+            ).add_to(m)
+
+        # C. Proposed Cooling Resource Icons (Layer Toggle: show_cooling_resources)
+        if is_recommended and show_cooling_resources and rec_info:
+            itype = rec_info.get("intervention", "").lower()
+            if "hydration" in itype:
+                icon_sym = "🚚"
+                badge_bg = "#2563EB"
+                badge_title = "Hydration Truck"
+            elif "cooling" in itype:
+                icon_sym = "❄️"
+                badge_bg = "#1D4ED8"
+                badge_title = "Cooling Center"
+            else:
+                icon_sym = "🌳"
+                badge_bg = "#059669"
+                badge_title = "Tree Corridor"
+
+            # Offset slightly to upper-right of the intersection node
+            icon_html = f"""
+            <div style="
+                background-color: {badge_bg};
+                color: white;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.30);
+                border: 2px solid white;
+                cursor: pointer;
+            " title="{badge_title}: {rec_info['intervention_title']}">
+                {icon_sym}
+            </div>
+            """
+            folium.Marker(
+                location=[lat + 0.0016, lon + 0.0016],
+                icon=folium.DivIcon(
+                    html=icon_html,
+                    icon_size=(24, 24),
+                    icon_anchor=(12, 12)
+                ),
+                tooltip=f"{icon_sym} Proposed {badge_title}: {rec_info['intervention_title']}",
+                popup=folium.Popup(popup_html, max_width=280)
+            ).add_to(m)
+
+        # D. Highlight Ring for Selected Location
         if is_selected:
             folium.CircleMarker(
                 location=[lat, lon],
-                radius=18,
+                radius=20,
                 color="#0F172A",
                 weight=2,
                 fill=False,
                 dash_array="4, 4"
             ).add_to(m)
 
-    # 3. Floating HTML Legend
+    # -------------------------------------------------------------------------
+    # 3. Floating Dual-Group Map Legend (Map Layers & AI Recommendations)
+    # -------------------------------------------------------------------------
     legend_html = """
     <div style="
         position: fixed; 
-        bottom: 24px; left: 24px; width: 220px; 
-        background-color: white; 
-        border:1px solid #CBD5E1; 
+        bottom: 20px; left: 20px; width: 310px; 
+        background-color: rgba(255, 255, 255, 0.96); 
+        backdrop-filter: blur(4px);
+        border: 1px solid #CBD5E1; 
         border-radius: 8px;
-        z-index:9999; 
-        font-size:11px;
+        z-index: 9999; 
+        font-size: 11px;
         padding: 10px 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        line-height: 1.4;
-        ">
-        <strong style="color:#0F172A; font-size:12px;">Predicted Heat Offset</strong><br/>
-        <span style="color:#64748B; font-size:10px;">0°F = City Reference Baseline</span>
-        <div style="margin-top: 6px;">
-            <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
-                <span style="background:#DC2626; width:11px; height:11px; border-radius:50%; display:inline-block;"></span>
-                <span>+5.0°F+ Crimson (Brownsville)</span>
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
+        line-height: 1.35;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    ">
+        <div style="border-bottom: 1px solid #E2E8F0; padding-bottom: 5px; margin-bottom: 7px;">
+            <strong style="color: #0F172A; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em;">
+                🗺️ Map Layers & AI Recommendations
+            </strong>
+        </div>
+
+        <!-- Group A: Predicted Heat Offset -->
+        <div style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+                <span style="font-weight: 700; color: #475569; font-size: 10px; text-transform: uppercase;">
+                    Group A · Predicted Heat Offset
+                </span>
+                <span style="color: #64748B; font-size: 9px;">0°F = ref average</span>
             </div>
-            <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
-                <span style="background:#EA580C; width:11px; height:11px; border-radius:50%; display:inline-block;"></span>
-                <span>+3.5°F to +4.9°F Orange</span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 6px;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="background: #DC2626; width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
+                    <span style="color: #0F172A; font-size: 10px;">Crimson: Signif. hotter</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="background: #EA580C; width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
+                    <span style="color: #0F172A; font-size: 10px;">Orange: Mod. hotter</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="background: #EAB308; width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
+                    <span style="color: #0F172A; font-size: 10px;">Neutral: Near avg</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="background: #059669; width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
+                    <span style="color: #0F172A; font-size: 10px;">Blue/Green: Cooler ref</span>
+                </div>
             </div>
-            <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
-                <span style="background:#EAB308; width:11px; height:11px; border-radius:50%; display:inline-block;"></span>
-                <span>0.0°F to +3.4°F Near Ref</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
-                <span style="background:#059669; width:11px; height:11px; border-radius:50%; display:inline-block;"></span>
-                <span>-3.1°F Emerald (Park Slope)</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:6px;">
-                <span style="background:#2563EB; width:11px; height:11px; border-radius:50%; display:inline-block;"></span>
-                <span>Cooler than Reference</span>
+        </div>
+
+        <!-- Group B: Proposed Cooling Interventions -->
+        <div style="border-top: 1px solid #F1F5F9; padding-top: 6px;">
+            <span style="font-weight: 700; color: #475569; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 4px;">
+                Group B · Proposed Interventions
+            </span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 6px;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-size: 11px;">🚚</span>
+                    <span style="color: #0F172A; font-size: 10px;"><strong>Hydration Truck</strong></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-size: 11px;">❄️</span>
+                    <span style="color: #0F172A; font-size: 10px;"><strong>Cooling Center</strong></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-size: 11px;">🌳</span>
+                    <span style="color: #0F172A; font-size: 10px;"><strong>Tree Corridor</strong></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-size: 11px;">🎯</span>
+                    <span style="color: #9333EA; font-size: 10px;"><strong>AI Priority Site</strong></span>
+                </div>
             </div>
         </div>
     </div>
@@ -242,20 +399,21 @@ def render_heat_map(
     m.get_root().html.add_child(folium.Element(legend_html))
 
     # Render through streamlit_folium with dynamic key based on persona and city
-    # to trigger immediate zoom-in / zoom-out transitions upon persona selection
     map_output = st_folium(
         m,
         width="100%",
         height=520,
-        key=f"folium_map_{persona}_{city_key}",
+        key=f"folium_map_{persona}_{city_key}_{show_heat_markers}_{effective_ai_rec}_{show_cooling_resources}_{effective_coverage}",
         returned_objects=["last_object_clicked_popup"]
     )
     
-    # Notice below map regarding straight-line distance
-    if show_coverage and show_recommendations:
+    # -------------------------------------------------------------------------
+    # 4. Mandatory Notice Below Map
+    # -------------------------------------------------------------------------
+    if effective_coverage:
         st.markdown("""
-            <div style="font-size: 0.74rem; color: #64748B; margin-top: 4px;">
-                * <strong>Coverage Rings:</strong> Approximate 500 m straight-line coverage — not verified walking distance or network isochrone.
+            <div style="font-size: 0.74rem; color: #64748B; margin-top: 4px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 6px 10px; border-radius: 6px;">
+                * <strong>Coverage Rings:</strong> Approximate 500 m straight-line distance, not verified walking routes or actual service accessibility.
             </div>
         """, unsafe_allow_html=True)
 

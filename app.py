@@ -29,6 +29,7 @@ from components.heat_map import render_heat_map
 from components.intersection_details import render_intersection_details
 from components.heat_explanations import render_heat_explanations
 from components.priority_table import render_priority_table
+from components.historical_heat import render_historical_heat
 
 # Screen 3 Main Screen Logic
 from screens.screen_3_dispatch_equity import render_screen_3
@@ -70,7 +71,19 @@ if "show_recommendations" not in st.session_state:
     st.session_state["show_recommendations"] = True
 
 if "show_coverage" not in st.session_state:
-    st.session_state["show_coverage"] = True
+    st.session_state["show_coverage"] = False
+
+if "show_heat_markers" not in st.session_state:
+    st.session_state["show_heat_markers"] = True
+
+if "show_ai_recommended" not in st.session_state:
+    st.session_state["show_ai_recommended"] = True
+
+if "show_cooling_resources" not in st.session_state:
+    st.session_state["show_cooling_resources"] = True
+
+if "show_coverage_rings" not in st.session_state:
+    st.session_state["show_coverage_rings"] = False
 
 if "forecast_high_f" not in st.session_state:
     st.session_state["forecast_high_f"] = 98
@@ -446,15 +459,48 @@ else:
             </div>
         """, unsafe_allow_html=True)
 
+        # Interactive Map Layer Controls (4 Toggles)
+        lay_col1, lay_col2 = st.columns(2)
+        with lay_col1:
+            st.session_state["show_heat_markers"] = st.toggle(
+                "Show Heat Offset Markers",
+                value=st.session_state["show_heat_markers"],
+                key="tog_heat_offsets",
+                help="Toggle circular heat-offset markers (+5.6°F to -3.1°F)"
+            )
+            st.session_state["show_cooling_resources"] = st.toggle(
+                "Show Proposed Cooling Resources",
+                value=st.session_state["show_cooling_resources"],
+                key="tog_cooling_resources",
+                help="Toggle intervention icons (🚚 Hydration Trucks, ❄️ Cooling Centers, 🌳 Tree Corridors)"
+            )
+        with lay_col2:
+            st.session_state["show_ai_recommended"] = st.toggle(
+                "Show AI-Recommended Locations",
+                value=st.session_state["show_ai_recommended"],
+                key="tog_ai_recommended",
+                help="Toggle purple target outline for locations recommended by AI Copilot"
+            )
+            st.session_state["show_coverage_rings"] = st.toggle(
+                "Show Approximate Coverage Rings",
+                value=st.session_state["show_coverage_rings"],
+                key="tog_coverage_rings",
+                help="Toggle 500-meter straight-line service catchment circles"
+            )
+
         render_heat_map(
             df=df_intersections,
             selected_id=st.session_state["selected_intersection_id"],
             recommendations=agent_recommendations,
-            show_recommendations=st.session_state["show_recommendations"],
-            show_coverage=st.session_state["show_coverage"],
+            show_recommendations=st.session_state["show_ai_recommended"],
+            show_coverage=st.session_state["show_coverage_rings"],
             forecast_high_f=st.session_state["forecast_high_f"],
             persona=st.session_state["selected_persona"],
-            city_key=city_key
+            city_key=city_key,
+            show_heat_markers=st.session_state["show_heat_markers"],
+            show_ai_recommended=st.session_state["show_ai_recommended"],
+            show_cooling_resources=st.session_state["show_cooling_resources"],
+            show_coverage_rings=st.session_state["show_coverage_rings"]
         )
 
     with details_col:
@@ -463,7 +509,7 @@ else:
             render_intersection_details(
                 intersection=selected_record,
                 recommendations=agent_recommendations,
-                show_recommendations=st.session_state["show_recommendations"],
+                show_recommendations=st.session_state["show_ai_recommended"],
                 forecast_high_f=st.session_state["forecast_high_f"]
             )
         
@@ -477,6 +523,13 @@ else:
     # -----------------------------------------------------------------------------
     st.markdown("<hr style='border-color: #E2E8F0; margin: 24px 0 16px 0;'>", unsafe_allow_html=True)
     render_priority_table(df_intersections, selected_id=st.session_state["selected_intersection_id"])
+
+
+    # -----------------------------------------------------------------------------
+    # 12. SEVEN-YEAR HISTORICAL HEAT INTELLIGENCE (GHCN-DAILY)
+    # -----------------------------------------------------------------------------
+    st.markdown("<hr style='border-color: #E2E8F0; margin: 28px 0 20px 0;'>", unsafe_allow_html=True)
+    render_historical_heat(city=city_key, data_mode=st.session_state["data_mode"])
 
 
 

@@ -105,18 +105,54 @@ def get_agent_recommendations(city: str = "brooklyn") -> List[Dict[str, Any]]:
     return data.get("recommendations", [])
 
 
-def get_historical_heat_data(city: str = "brooklyn") -> pd.DataFrame:
+def get_historical_heat_data(city: str = "brooklyn", data_mode: str = "Demo") -> pd.DataFrame:
     """
-    Retrieves station 7-year temperature frequency analysis (GHCN-Daily).
+    Retrieves weather station 7-year temperature frequency analysis (GHCN-Daily).
+    In Demo mode, returns structured synthetic records for 2019–2025 based on NYC/Dallas station profiles.
+    In Live mode, queries remote BigQuery dataset or raises error if not configured.
     """
-    years = [2018, 2019, 2020, 2021, 2022, 2023, 2024]
-    days_over_90 = [14, 18, 20, 17, 24, 22, 29]
-    days_over_95 = [2, 4, 6, 3, 8, 7, 11]
+    if data_mode == "Live":
+        from services.backend_client import backend_client
+        if not backend_client.is_live_configured:
+            raise RuntimeError(
+                "Live BigQuery backend connection not configured for station_daily_temps. "
+                "Set HEATSHIELD_BACKEND_URL or switch to Demo Mode to view illustrative GHCN history."
+            )
+        try:
+            return backend_client.fetch_live_historical_temps(city)
+        except Exception as e:
+            raise RuntimeError(f"Failed to fetch live GHCN historical temperatures: {e}")
+
+    # Demo Mode: Clearly labeled synthetic 7-year history (2019-2025)
+    years = [2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    if "dallas" in city.lower():
+        days_over_90 = [72, 79, 64, 102, 114, 88, 93]
+        days_over_95 = [24, 28, 16, 47, 55, 38, 41]
+        station_id = "USW00003927"
+        station_name = "Dallas/Fort Worth International WSO"
+    else:
+        days_over_90 = [18, 20, 17, 24, 22, 29, 26]
+        days_over_95 = [4, 6, 3, 8, 7, 11, 9]
+        station_id = "USW00094789"
+        station_name = "JFK International Airport / NYC Area Station"
+
     return pd.DataFrame({
         "year": years,
         "days_over_90f": days_over_90,
-        "days_over_95f": days_over_95
+        "days_over_95f": days_over_95,
+        "station_id": [station_id] * len(years),
+        "station_name": [station_name] * len(years)
     })
+
+
+def get_map_layer_settings() -> Dict[str, bool]:
+    """Returns default settings for interactive Leaflet map layers."""
+    return {
+        "show_heat_markers": True,
+        "show_ai_recommended": True,
+        "show_cooling_resources": True,
+        "show_coverage_rings": False,
+    }
 
 
 def calculate_priority_score(offset: float, vuln_pop: int, no_veh_rate: float) -> int:
