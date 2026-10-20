@@ -24,11 +24,11 @@ class TestChallengeQuestions(unittest.TestCase):
 
     def test_question_1_spatial_heat_comparison(self):
         """
-        Q1: 'Why is 4th and Marsalis so much worse than two blocks north?'
-        Must explain the prompt's Dallas context, map to Brooklyn's flagship hotspot (Pitkin Ave),
-        and detail the physical root causes via ML.EXPLAIN_PREDICT feature attributions.
+        Q1 (Brooklyn Ready): 'Why is Pitkin Ave & Mother Gaston Blvd so much worse than two blocks north?'
+        Must analyze Brooklyn's flagship hotspot (Pitkin Ave & Mother Gaston Blvd in Brownsville),
+        compare to Atlantic Ave / Park Slope, and detail physical root causes via ML.EXPLAIN_PREDICT.
         """
-        q = "Why is 4th and Marsalis so much worse than two blocks north?"
+        q = "Why is Pitkin Ave & Mother Gaston Blvd so much worse than two blocks north?"
         res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
 
         self.assertIn("reply", res)
@@ -37,10 +37,7 @@ class TestChallengeQuestions(unittest.TestCase):
         # Ensure no crash
         self.assertTrue(len(reply) > 200)
 
-        # Context mapping check
-        self.assertTrue(
-            "Challenge Prompt Context" in reply or "4th & Marsalis" in reply or "Marsalis" in reply
-        )
+        # Flagship hotspot
         self.assertIn("Pitkin Ave & Mother Gaston Blvd", reply)
 
         # Scientific feature attributions
@@ -54,13 +51,36 @@ class TestChallengeQuestions(unittest.TestCase):
         # Check honest model boundary
         self.assertIn("Honest Model Limitation", reply)
 
+    def test_question_1_legacy_dallas_prompt_mapping(self):
+        """
+        Q1 (Legacy Hackathon Prompt Compatibility): 'Why is 4th and Marsalis so much worse than two blocks north?'
+        Must explain the prompt's Dallas context, map to Brooklyn's flagship hotspot (Pitkin Ave),
+        and detail the physical root causes via ML.EXPLAIN_PREDICT feature attributions.
+        """
+        q = "Why is 4th and Marsalis so much worse than two blocks north?"
+        res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
+
+        self.assertIn("reply", res)
+        reply = res["reply"]
+
+        self.assertTrue(len(reply) > 200)
+        self.assertTrue(
+            "Challenge Prompt Context" in reply or "4th & Marsalis" in reply or "Marsalis" in reply
+        )
+        self.assertIn("Pitkin Ave & Mother Gaston Blvd", reply)
+        self.assertIn("ML.EXPLAIN_PREDICT", reply)
+        self.assertIn("+5.4°F", reply)
+        self.assertIn("Two Blocks North", reply)
+        self.assertIn("Park Slope", reply)
+        self.assertIn("Honest Model Limitation", reply)
+
     def test_question_2_heat_frequency_and_trend(self):
         """
-        Q2: 'How often does that area actually hit dangerous heat? Is it getting worse?'
+        Q2 (Brooklyn Ready): 'How often does Pitkin Ave & Mother Gaston Blvd in Brownsville actually hit dangerous heat? Is it getting worse?'
         Must resolve 7-year station history, local crossing frequency, exposure multiplier,
         yearly breakdown table, and 7-year trend without KeyError.
         """
-        q = "How often does that area actually hit dangerous heat? Is it getting worse?"
+        q = "How often does Pitkin Ave & Mother Gaston Blvd in Brownsville actually hit dangerous heat? Is it getting worse?"
         res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
 
         self.assertIn("reply", res)
@@ -83,11 +103,11 @@ class TestChallengeQuestions(unittest.TestCase):
 
     def test_question_3_demographics_and_vulnerability(self):
         """
-        Q3: 'Who lives around that site—how many people, how old, how many without a car?'
+        Q3 (Brooklyn Ready): 'Who lives around Pitkin Ave & Mother Gaston Blvd—how many people, how old, how many without a car?'
         Must provide demographic counts: total population, seniors 65+, carless households,
         poverty rate, and explain why carlessness compounds heat risk.
         """
-        q = "Who lives around that site—how many people, how old, how many without a car?"
+        q = "Who lives around Pitkin Ave & Mother Gaston Blvd—how many people, how old, how many without a car?"
         res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
 
         self.assertIn("reply", res)
@@ -105,11 +125,11 @@ class TestChallengeQuestions(unittest.TestCase):
 
     def test_question_4_head_to_head_tradeoff(self):
         """
-        Q4: 'I'm down to two sites and have to pick one. Make the case for each.'
+        Q4 (Brooklyn Ready): 'I'm down to two Brooklyn sites—Brownsville and East Flatbush—and have to pick one. Make the case for each.'
         Must compare Site A (Brownsville) vs Site B (East Flatbush) with side-by-side table,
         trade-off analysis, Case for A, Case for B, and planner recommendation.
         """
-        q = "I'm down to two sites and have to pick one. Make the case for each."
+        q = "I'm down to two Brooklyn sites—Brownsville and East Flatbush—and have to pick one. Make the case for each."
         res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
 
         self.assertIn("reply", res)
@@ -123,11 +143,11 @@ class TestChallengeQuestions(unittest.TestCase):
 
     def test_question_5_council_proposal_draft(self):
         """
-        Q5: 'Draft the proposal I'm taking to council in the morning.'
+        Q5 (Brooklyn Ready): 'Draft the proposal I'm taking to the New York City Council and Brooklyn Borough President in the morning.'
         Must generate City Council briefing memo with budget request, executive summary,
         continuous #1-#3 ranking table, and multi-agency dispatch.
         """
-        q = "Draft the proposal I'm taking to council in the morning."
+        q = "Draft the proposal I'm taking to the New York City Council and Brooklyn Borough President in the morning."
         res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
 
         self.assertIn("reply", res)
@@ -142,12 +162,12 @@ class TestChallengeQuestions(unittest.TestCase):
 
     def test_question_6_equity_audit(self):
         """
-        Q6: 'Before I send it—did we actually reach the neighborhoods that need this most?'
+        Q6 (Brooklyn Ready): 'Before I send it—did we actually reach the Brooklyn neighborhoods that need this most, like Brownsville, East New York, and Coney Island?'
         Must run post-hoc equity audit ('Strip the variable. Audit the outcome.'),
         produce the equity comparison table, and highlight the Industrial Heat Trap
         and Coastal Senior Blind Spot.
         """
-        q = "Before I send it—did we actually reach the neighborhoods that need this most?"
+        q = "Before I send it—did we actually reach the Brooklyn neighborhoods that need this most, like Brownsville, East New York, and Coney Island?"
         res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
 
         self.assertIn("reply", res)
@@ -163,10 +183,10 @@ class TestChallengeQuestions(unittest.TestCase):
 
     def test_question_7_continuous_ranking_and_siting(self):
         """
-        Q7: 'We can fund three cooling centers this summer. Where should they go?'
+        Q7 (Brooklyn Ready): 'We can fund three cooling centers in Brooklyn this summer. Where should they go?'
         Must provide continuous #1..#8 ranking, rank shift (Delta), and Tier 1 top 3 capital siting.
         """
-        q = "We can fund three cooling centers this summer. Where should they go?"
+        q = "We can fund three cooling centers in Brooklyn this summer. Where should they go?"
         res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
 
         self.assertIn("reply", res)

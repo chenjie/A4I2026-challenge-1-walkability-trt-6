@@ -1249,7 +1249,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
       <div class="prompt-chips" id="prompt-chips-container">
         <span class="chip" onclick="askPreset('We can fund three cooling centers and a street tree program this budget cycle. Where should they go?')">1. Rank Top 3 Sites</span>
         <span class="chip" onclick="askPreset('Show the full rank table across all 8 corridors with priority_rank, raw_heat_rank, and rank_shift.')">📊 Full #1..#8 Ranking & Rank Shift</span>
-        <span class="chip" onclick="askPreset('Why is 4th and Marsalis so much worse than two blocks north?')">2. Why Is Pitkin Hotter? (ML.EXPLAIN_PREDICT)</span>
+        <span class="chip" onclick="askPreset('Why is Pitkin Ave & Mother Gaston Blvd so much worse than two blocks north?')">2. Why Is Pitkin Hotter? (ML.EXPLAIN_PREDICT)</span>
         <span class="chip" onclick="askPreset('Predict heat offset for unmeasured coordinates 40.6652, -73.9124')">🎯 3. Predict Unmeasured Street (40.6652, -73.9124)</span>
         <span class="chip" onclick="askPreset('How often does that area actually hit dangerous heat? Is it getting worse?')">4. 7-Yr GHCN Frequency & observed_at=NULL</span>
         <span class="chip" onclick="askPreset('Who lives around that site—how many people, how old, how many without a car?')">5. Who Lives There? (12-Col ACS Seniors)</span>
@@ -1634,7 +1634,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
       city_planner: [
         { label: "1. Rank Top 3 Sites", text: "We can fund three cooling centers and a street tree program this budget cycle. Where should they go?" },
         { label: "📊 Full #1..#8 Ranking", text: "Show the full rank table across all 8 corridors with priority_rank, raw_heat_rank, and rank_shift." },
-        { label: "2. Why Is Pitkin Hotter?", text: "Why is 4th and Marsalis so much worse than two blocks north?" },
+        { label: "2. Why Is Pitkin Hotter?", text: "Why is Pitkin Ave & Mother Gaston Blvd so much worse than two blocks north?" },
         { label: "🎯 3. Predict Unmeasured Street", text: "Predict heat offset for unmeasured coordinates 40.6652, -73.9124" },
         { label: "4. 7-Yr GHCN Frequency", text: "How often does that area actually hit dangerous heat? Is it getting worse?" },
         { label: "5. Who Lives There?", text: "Who lives around that site—how many people, how old, how many without a car?" },
