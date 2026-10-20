@@ -230,3 +230,105 @@ section[data-testid="stSidebar"] .stSelectbox label {
     font-size: 0.80rem;
     color: #166534;
 }
+
+
+/* ==========================================================================
+   Screen 3 Custom Styling Tokens (Dispatch & Equity Audit)
+   ========================================================================== */
+.agency-tag-oem {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+}
+.agency-tag-health {
+    background-color: #EFF6FF;
+    color: #1D4ED8;
+    border: 1px solid #BFDBFE;
+}
+.agency-tag-parks {
+    background-color: #ECFDF5;
+    color: #059669;
+    border: 1px solid #A7F3D0;
+}
+
+.equity-metric-card {
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 16px 18px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.equity-metric-title {
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748B;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.equity-metric-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1.1;
+    margin-bottom: 3px;
+}
+
+.gap-alert-card {
+    background: #FFFBEB;
+    border: 1px solid #FCD34D;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+
+.gap-badge-critical {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    font-weight: 700;
+    font-size: 0.70rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    border: 1px solid #FCA5A5;
+}
+
+.gap-badge-moderate {
+    background-color: #FEF3C7;
+    color: #92400E;
+    font-weight: 700;
+    font-size: 0.70rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    border: 1px solid #FDE68A;
+}
+
+.proposal-preview-box {
+    background: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: #1E293B;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+
+/* Clean anchor support for navigation items */
+a.nav-item {
+    text-decoration: none !important;
+    color: inherit;
+    display: flex;
+    cursor: pointer;
+}
+a.nav-item:hover {
+    text-decoration: none !important;
+}
+
+

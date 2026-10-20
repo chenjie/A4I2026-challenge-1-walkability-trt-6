@@ -1,39 +1,51 @@
 {
   "city": "Brooklyn, New York",
-  "generated_by": "Google ADK Multi-Agent Resilience Planner (Provisional)",
+  "generated_by": "Google ADK Multi-Agent Resilience Planner",
   "recommendations": [
     {
       "intersection_id": "BK-01",
       "intersection_name": "Rockaway Ave & Pitkin Ave",
       "neighborhood": "Brownsville",
       "intervention": "hydration_truck",
-      "intervention_title": "NYCEM Hydration Truck Staging",
+      "intervention_title": "NYCEM Tactical Hydration Truck Staging",
       "agency": "NYCEM",
-      "reason": "Elevated heat offset (+5.6°F) and 31.4% zero-vehicle rate; critical hydration priority.",
+      "agency_full": "New York City Emergency Management",
+      "reason": "Elevated heat offset (+5.6\u00b0F) and 31.4% zero-vehicle rate; critical pedestrian hydration priority.",
       "catchment_radius_m": 500,
-      "priority": "High"
+      "priority": "Urgent",
+      "status": "Staged for Dispatch",
+      "target_hours": "11:30 - 18:30 EDT",
+      "est_budget": "2,500 / event"
     },
     {
       "intersection_id": "BK-02",
       "intersection_name": "Pennsylvania Ave & Atlantic Ave",
       "neighborhood": "East New York",
       "intervention": "cooling_center",
-      "intervention_title": "DOHMH Cooling Center Expansion",
+      "intervention_title": "DOHMH Emergency Cooling Center Activation",
       "agency": "DOHMH",
-      "reason": "High vulnerable population (9,100) and unshaded commercial corridors requiring indoor shelter.",
+      "agency_full": "Department of Health and Mental Hygiene",
+      "reason": "High vulnerable population (9,100) and unshaded commercial corridors requiring indoor air-conditioned shelter.",
       "catchment_radius_m": 500,
-      "priority": "High"
+      "priority": "Urgent",
+      "status": "Operational",
+      "target_hours": "08:00 - 20:00 EDT",
+      "est_budget": "8,000 / week"
     },
     {
       "intersection_id": "BK-03",
       "intersection_name": "Knickerbocker Ave & Myrtle Ave",
       "neighborhood": "Bushwick",
       "intervention": "cooling_center",
-      "intervention_title": "DOHMH Cooling Center Expansion",
+      "intervention_title": "DOHMH Extended Cooling Center Hub",
       "agency": "DOHMH",
+      "agency_full": "Department of Health and Mental Hygiene",
       "reason": "High density multifamily housing combined with elevated subway thermal retention.",
       "catchment_radius_m": 500,
-      "priority": "High"
+      "priority": "High",
+      "status": "Operational",
+      "target_hours": "09:00 - 19:00 EDT",
+      "est_budget": "6,500 / week"
     },
     {
       "intersection_id": "BK-06",
@@ -42,20 +54,105 @@
       "intervention": "hydration_truck",
       "intervention_title": "NYCEM Senior Wellness & Hydration Route",
       "agency": "NYCEM",
+      "agency_full": "New York City Emergency Management",
       "reason": "Disproportionately high senior density (median age 42.6) with 34.8% lack of vehicle access.",
       "catchment_radius_m": 500,
-      "priority": "High"
+      "priority": "High",
+      "status": "Staged for Dispatch",
+      "target_hours": "12:00 - 18:00 EDT",
+      "est_budget": "4,000 / event"
     },
     {
       "intersection_id": "BK-08",
       "intersection_name": "Van Brunt St & Pioneer St",
       "neighborhood": "Red Hook",
       "intervention": "tree_corridor",
-      "intervention_title": "NYC Parks High-Albedo Tree Corridor",
+      "intervention_title": "NYC Parks High-Albedo Cool Pavement Corridor",
       "agency": "NYC Parks",
-      "reason": "Candidate for cool pavement overlay and waterfront vegetative buffer to enhance harbor airflow.",
+      "agency_full": "NYC Department of Parks & Recreation",
+      "reason": "Industrial maritime asphalt with heat retention; candidate for cool pavement overlay and vegetative buffer.",
       "catchment_radius_m": 500,
-      "priority": "Moderate"
+      "priority": "Moderate",
+      "status": "Capital Planning",
+      "target_hours": "FY2027 Capital Cycle",
+      "est_budget": "85,000 (Capital)"
+    }
+  ],
+  "dallas_recommendations": [
+    {
+      "intersection_id": "DAL-01",
+      "intersection_name": "MLK Jr Blvd & Malcolm X Blvd",
+      "neighborhood": "South Dallas",
+      "intervention": "hydration_truck",
+      "intervention_title": "Dallas OEM Mobile Hydration & Misting Hub",
+      "agency": "Dallas OEM",
+      "agency_full": "Dallas Office of Emergency Management",
+      "reason": "Severe microclimate heat offset (+8.2\u00b0F), 9,200 vulnerable residents, and 22.4% zero-vehicle transit rate.",
+      "catchment_radius_m": 500,
+      "priority": "Urgent",
+      "status": "Staged for Dispatch",
+      "target_hours": "11:00 - 19:00 CDT",
+      "est_budget": "4,000 / event"
+    },
+    {
+      "intersection_id": "DAL-02",
+      "intersection_name": "Singleton Blvd & Hampton Rd",
+      "neighborhood": "West Dallas",
+      "intervention": "cooling_center",
+      "intervention_title": "DCHHS Public Cooling Center Expansion",
+      "agency": "DCHHS",
+      "agency_full": "Dallas County Health and Human Services",
+      "reason": "High industrial surface absorption (+7.4\u00b0F offset) and acute multi-family indoor cooling deficits.",
+      "catchment_radius_m": 500,
+      "priority": "Urgent",
+      "status": "Operational",
+      "target_hours": "08:00 - 20:00 CDT",
+      "est_budget": "9,500 / week"
+    },
+    {
+      "intersection_id": "DAL-03",
+      "intersection_name": "Buckner Blvd & Lake June Rd",
+      "neighborhood": "Pleasant Grove",
+      "intervention": "cooling_center",
+      "intervention_title": "DCHHS Community Recreation Cooling Hub",
+      "agency": "DCHHS",
+      "agency_full": "Dallas County Health and Human Services",
+      "reason": "Major arterial pedestrian crossing with 8,800 vulnerable residents and +6.9\u00b0F predicted heat offset.",
+      "catchment_radius_m": 500,
+      "priority": "High",
+      "status": "Operational",
+      "target_hours": "09:00 - 19:00 CDT",
+      "est_budget": "7,000 / week"
+    },
+    {
+      "intersection_id": "DAL-05",
+      "intersection_name": "Park Lane & Ridgecrest Rd",
+      "neighborhood": "Vickery Meadow",
+      "intervention": "hydration_truck",
+      "intervention_title": "Dallas OEM High-Density Hydration Route",
+      "agency": "Dallas OEM",
+      "agency_full": "Dallas Office of Emergency Management",
+      "reason": "Highest no-vehicle rate in Dallas (27.5%), 9,400 vulnerable residents, and severe transit walk heat burden.",
+      "catchment_radius_m": 500,
+      "priority": "High",
+      "status": "Staged for Dispatch",
+      "target_hours": "12:00 - 18:30 CDT",
+      "est_budget": "3,500 / event"
+    },
+    {
+      "intersection_id": "DAL-06",
+      "intersection_name": "Webb Chapel Rd & Lombardy Ln",
+      "neighborhood": "Bachman Lake",
+      "intervention": "tree_corridor",
+      "intervention_title": "Dallas Parks Albedo & Canopy Investment",
+      "agency": "Dallas Parks",
+      "agency_full": "Dallas Park and Recreation Department",
+      "reason": "Expansive retail asphalt corridors requiring shade tree investment and reflective surface treatments.",
+      "catchment_radius_m": 500,
+      "priority": "Moderate",
+      "status": "Capital Planning",
+      "target_hours": "FY2027 Capital Cycle",
+      "est_budget": "10,000 (Capital)"
     }
   ]
 }
