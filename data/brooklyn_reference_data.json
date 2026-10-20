@@ -1,0 +1,48 @@
+{
+  "city": "New York (Brooklyn)",
+  "borough": "Brooklyn",
+  "county": "Kings County",
+  "state": "NY",
+  "state_fips": "36",
+  "county_fips": "047",
+  "campaign": {
+    "name": "NOAA Heat Watch Brooklyn",
+    "layer_id": 67,
+    "window": "Afternoon (Peak Heat)",
+    "observation_count": 15105,
+    "temperature_f": {
+      "min": 85.4,
+      "max": 95.4,
+      "mean": 90.05,
+      "spread": 10.0
+    },
+    "bounding_box": {
+      "min_lat": 40.6069,
+      "max_lat": 40.7504,
+      "min_lon": -74.0418,
+      "max_lon": -73.874
+    }
+  },
+  "demographics_summary": {
+    "total_tracts_in_city_bounds": 2939,
+    "total_population": 11357064.0,
+    "avg_median_age": 38.5,
+    "avg_poverty_pct": 15.2,
+    "avg_no_vehicle_pct": 38.8
+  },
+  "station_history": {
+    "total_observations": 19435,
+    "num_stations": 11,
+    "date_range": "2019-01-01 to 2025-12-31"
+  },
+  "street_tree_census": {
+    "source": "bigquery-public-data.new_york_trees.tree_census_2015",
+    "license": "CC0 / Public Domain",
+    "total_brooklyn_street_trees": 177293,
+    "features_derived": [
+      "tract_tree_density_per_km2",
+      "canopy_deficit_pct",
+      "local_block_trees_250m"
+    ]
+  }
+}
