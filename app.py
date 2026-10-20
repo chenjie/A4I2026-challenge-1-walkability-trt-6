@@ -215,10 +215,11 @@ with header_col2:
 persona_context = {
     "City Planner": {
         "icon": "🏛️",
-        "agency": "NYC DOHMH & Dept of City Planning",
-        "focus": "Permanent DOHMH Cooling Center Siting & Council Budget Defense",
+        "persona_title": "City Planner",
+        "agency": "NYC DOHMH & Department of City Planning",
+        "prioritization": "High-heat census tracts (> +3.5°F offset) lacking indoor public cooling facilities within 0.5 km of transit corridors.",
+        "permanent_solution": "Capital funding & zoning for permanent DOHMH indoor cooling centers, public facility HVAC retrofits, and Council budget defense.",
         "badge_color": "#1769E0",
-        "desc": "Prioritizing permanent public facility investments and indoor climate shelters in transit-accessible, high-offset neighborhoods.",
         "zoom_desc": "🔭 Zoomed Out (11.5x) · Boroughwide Siting View",
         "zoom_pill_style": "background-color: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE;",
         "kpi_metrics": {
@@ -242,10 +243,11 @@ persona_context = {
     },
     "Emergency Management Officer": {
         "icon": "⚡",
-        "agency": "NYCEM (Emergency Management)",
-        "focus": "NYCEM Tactical Hydration Truck Deployment & Senior Wellness Checks",
+        "persona_title": "Emergency Management Officer",
+        "agency": "NYC Emergency Management (NYCEM)",
+        "prioritization": "Acute heatwave epicenters (offsets ≥ +4.5°F) with high elderly vulnerability (36,100 seniors) and low vehicle access.",
+        "permanent_solution": "Permanent municipal misting station hookups, rapid mobile hydration truck staging corridors, and automated wellness dispatch.",
         "badge_color": "#DC2626",
-        "desc": "Deploying emergency mobile assets and dispatching door-to-door senior wellness teams to blocks crossing extreme heat thresholds.",
         "zoom_desc": "🎯 Zoomed In (13.8x) · Tactical Dispatch Hotspots",
         "zoom_pill_style": "background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5;",
         "kpi_metrics": {
@@ -269,10 +271,11 @@ persona_context = {
     },
     "Sustainability / Urban Forestry Officer": {
         "icon": "🌳",
+        "persona_title": "Sustainability / Urban Forestry Officer",
         "agency": "NYC Parks & Mayor's Office of Climate & Environmental Justice",
-        "focus": "NYC Parks Tree Corridors & Cool Pavement Capital Planning",
+        "prioritization": "Severe urban heat corridors with tree canopy deficit (< 15% vs 30% goal) and high asphalt impervious surface ratio (> 70%).",
+        "permanent_solution": "High-albedo cool pavement resurfacing, continuous street tree canopy expansion, and bioswale micro-cooling corridors.",
         "badge_color": "#059669",
-        "desc": "Targeting multi-year capital interventions where impervious surface fraction, pavement thermal mass, and tree canopy deficit drive microclimate heat.",
         "zoom_desc": "🌳 Corridor Zoom (12.6x) · Canopy Deficit & Albedo View",
         "zoom_pill_style": "background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0;",
         "kpi_metrics": {
@@ -297,34 +300,40 @@ persona_context = {
 }
 p_info = persona_context[st.session_state["selected_persona"]]
 
-st.markdown(f"""
-    <div class="focus-hero-card" style="border-left: 5px solid {p_info['badge_color']};">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.82rem; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">
-                    {p_info['icon']} Persona: {st.session_state['selected_persona']}
-                </span>
-                <span style="font-size: 0.74rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; {p_info['zoom_pill_style']}">
-                    {p_info['zoom_desc']}
-                </span>
-            </div>
-            <span style="font-size: 0.74rem; color: #475569; font-weight: 600; background: #F1F5F9; padding: 3px 10px; border-radius: 4px;">
-                🏛️ Lead Agency: <strong>{p_info['agency']}</strong>
-            </span>
-        </div>
-        <div style="margin-top: 6px;">
-            <div style="font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.06em; color: #64748B; font-weight: 700; margin-bottom: 2px;">
-                Active Operational Focus
-            </div>
-            <h3 style="margin: 0; color: #0F172A; font-size: 1.18rem; font-weight: 800; line-height: 1.3;">
-                🎯 {p_info['focus']}
-            </h3>
-            <p style="margin: 4px 0 0 0; color: #475569; font-size: 0.84rem; line-height: 1.4;">
-                {p_info['desc']}
-            </p>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+st.markdown(f"""<div class="focus-hero-card" style="border-left: 5px solid {p_info['badge_color']};">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+<span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">
+{p_info['icon']} Persona: {st.session_state['selected_persona']}
+</span>
+<span style="font-size: 0.74rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; {p_info['zoom_pill_style']}">
+{p_info['zoom_desc']}
+</span>
+</div>
+<span style="font-size: 0.74rem; color: #475569; font-weight: 600; background: #F1F5F9; padding: 3px 10px; border-radius: 4px;">
+🏛️ Lead Agency: <strong>{p_info['agency']}</strong>
+</span>
+</div>
+<div class="focus-meta-grid">
+<div class="focus-meta-item">
+<span class="focus-meta-label">Persona:</span>
+<span class="focus-meta-val" style="font-weight: 700; color: #0F172A;">{p_info['persona_title']}</span>
+</div>
+<div class="focus-meta-item">
+<span class="focus-meta-label">Lead Agency:</span>
+<span class="focus-meta-val">{p_info['agency']}</span>
+</div>
+<div class="focus-meta-item">
+<span class="focus-meta-label">Prioritization:</span>
+<span class="focus-meta-val">{p_info['prioritization']}</span>
+</div>
+<div class="focus-meta-item">
+<span class="focus-meta-label">Permanent Solution:</span>
+<span class="focus-meta-val" style="color: {p_info['badge_color']}; font-weight: 700;">{p_info['permanent_solution']}</span>
+</div>
+</div>
+</div>""", unsafe_allow_html=True)
+
 
 
 # -----------------------------------------------------------------------------
