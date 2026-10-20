@@ -339,17 +339,17 @@ else:
     p_info = persona_context[st.session_state["selected_persona"]]
 
     st.markdown(f"""<div class="focus-hero-card" style="border-left: 5px solid {p_info['badge_color']};">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-    <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.94rem; padding: 5px 14px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">
     {p_info['icon']} Persona: {st.session_state['selected_persona']}
     </span>
-    <span style="font-size: 0.74rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; {p_info['zoom_pill_style']}">
+    <span style="font-size: 0.86rem; font-weight: 700; padding: 4px 12px; border-radius: 4px; {p_info['zoom_pill_style']}">
     {p_info['zoom_desc']}
     </span>
     </div>
-    <span style="font-size: 0.74rem; color: #475569; font-weight: 600; background: #F1F5F9; padding: 3px 10px; border-radius: 4px;">
-    🏛️ Lead Agency: <strong>{p_info['agency']}</strong>
+    <span style="font-size: 0.88rem; color: #475569; font-weight: 600; background: #F1F5F9; padding: 5px 14px; border-radius: 6px;">
+    🏛️ Lead Agency: <strong style="color: #0F172A;">{p_info['agency']}</strong>
     </span>
     </div>
     <div class="focus-meta-grid">
