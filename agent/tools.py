@@ -241,6 +241,40 @@ def geocode_street_or_intersection(query: str) -> dict[str, Any]:
                 "resolution_method": "brooklyn_gazetteer",
             }
 
+    # 2b. Try Google Maps Geocoding API if GOOGLE_MAPS_API_KEY is available
+    gmaps_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+    if gmaps_key:
+        try:
+            search_q = f"{q_clean}, Brooklyn, NY" if "brooklyn" not in q_lower else q_clean
+            maps_url = (
+                "https://maps.googleapis.com/maps/api/geocode/json?"
+                + urllib.parse.urlencode({"address": search_q, "key": gmaps_key})
+            )
+            req = urllib.request.Request(maps_url, headers={"User-Agent": "A4I2026-HeatResilience-Agent/1.0"})
+            with urllib.request.urlopen(req, timeout=3.5) as resp:
+                gdata = json.loads(resp.read().decode("utf-8"))
+                if gdata.get("status") == "OK" and gdata.get("results"):
+                    first_res = gdata["results"][0]
+                    loc = first_res["geometry"]["location"]
+                    lat_val = float(loc["lat"])
+                    lon_val = float(loc["lng"])
+                    nearest = min(
+                        REF_DATA["sites"],
+                        key=lambda s: _haversine_km(lat_val, lon_val, s["latitude"], s["longitude"]),
+                    )
+                    return {
+                        "status": "resolved",
+                        "query": query,
+                        "latitude": round(lat_val, 4),
+                        "longitude": round(lon_val, 4),
+                        "matched_intersection": first_res.get("formatted_address", q_clean),
+                        "neighborhood": nearest["neighborhood"],
+                        "nearest_geo_id": nearest["geo_id"],
+                        "resolution_method": "google_maps_geocoding_api",
+                    }
+        except Exception:
+            pass
+
     # 3. Try OpenStreetMap Nominatim geocoder (pure lookup, no data storage) bounded to Brooklyn
     try:
         search_q = f"{q_clean}, Brooklyn, NY" if "brooklyn" not in q_lower else q_clean
@@ -1422,3 +1456,281 @@ def query_climate_dataset_summary() -> dict[str, Any]:
             "a4i_climate.tract_equity_audit_lookup (isolated post-hoc racial & socioeconomic equity audit table)",
         ],
     }
+
+
+# ============================================================================
+# Google Maps Platform + Gemini Live Citizen & Resident Cooling Refuge Tool
+# ============================================================================
+
+BROOKLYN_COOLING_CENTERS: list[dict[str, Any]] = [
+    {
+        "center_id": "CC-BK-01",
+        "name": "Stone Avenue Library (Designated Cooling Center)",
+        "address": "581 Mother Gaston Blvd, Brooklyn, NY 11212",
+        "neighborhood": "Brownsville",
+        "facility_type": "Public Library & Cooling Center",
+        "latitude": 40.6685,
+        "longitude": -73.9069,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Fri 10:00 AM - 6:00 PM, Sat 10:00 AM - 5:00 PM",
+        "amenities": ["Air Conditioning", "Cold Drinking Water", "Seating", "Free Wi-Fi", "Device Charging"],
+    },
+    {
+        "center_id": "CC-BK-02",
+        "name": "Brownsville Library (Emergency Cooling Refuge)",
+        "address": "61 Glenmore Ave, Brooklyn, NY 11212",
+        "neighborhood": "Brownsville",
+        "facility_type": "Public Library & Emergency Cooling Refuge",
+        "latitude": 40.6721,
+        "longitude": -73.9088,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Fri 9:00 AM - 7:00 PM",
+        "amenities": ["High-Capacity HVAC", "Hydration Station", "Child & Senior Friendly Space"],
+    },
+    {
+        "center_id": "CC-BK-03",
+        "name": "New Lots Library & Cultural Center",
+        "address": "665 New Lots Ave, Brooklyn, NY 11207",
+        "neighborhood": "East New York",
+        "facility_type": "Public Library & Designated Cooling Center",
+        "latitude": 40.6657,
+        "longitude": -73.8864,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Fri 10:00 AM - 6:00 PM",
+        "amenities": ["Air Conditioning", "Drinking Water Fountains", "Senior Cooling Zone"],
+    },
+    {
+        "center_id": "CC-BK-04",
+        "name": "Bushwick Library",
+        "address": "340 Bushwick Ave, Brooklyn, NY 11206",
+        "neighborhood": "Bushwick",
+        "facility_type": "Public Library & Designated Cooling Facility",
+        "latitude": 40.7029,
+        "longitude": -73.9392,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Fri 10:00 AM - 6:00 PM",
+        "amenities": ["Air Conditioning", "Chilled Water Refill", "Misting Tent on Plaza during Heatwaves"],
+    },
+    {
+        "center_id": "CC-BK-05",
+        "name": "Flatbush Library & Senior Refuge",
+        "address": "22 Linden Blvd, Brooklyn, NY 11226",
+        "neighborhood": "East Flatbush / Flatbush",
+        "facility_type": "Public Library & Senior Cooling Refuge",
+        "latitude": 40.6517,
+        "longitude": -73.9587,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Sat 10:00 AM - 6:00 PM",
+        "amenities": ["Air Conditioning", "Dedicated Senior Lounge", "Cold Water Refills"],
+    },
+    {
+        "center_id": "CC-BK-06",
+        "name": "Sunset Park Recreation Center & Library",
+        "address": "4201 4th Ave, Brooklyn, NY 11232",
+        "neighborhood": "Sunset Park",
+        "facility_type": "NYC Parks Recreation Center & Cooling Hub",
+        "latitude": 40.6508,
+        "longitude": -74.0084,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Fri 7:00 AM - 9:00 PM, Sat 9:00 AM - 5:00 PM",
+        "amenities": ["Indoor AC Gym", "Outdoor Olympic Pool", "Misting Showers", "Free Water"],
+    },
+    {
+        "center_id": "CC-BK-07",
+        "name": "Coney Island Senior Center & Library",
+        "address": "1901 Mermaid Ave, Brooklyn, NY 11224",
+        "neighborhood": "Coney Island",
+        "facility_type": "Senior Center & Designated Cooling Center",
+        "latitude": 40.5753,
+        "longitude": -73.9878,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Daily 8:30 AM - 6:00 PM during Heat Advisories",
+        "amenities": ["High-Capacity HVAC", "Wheelchair Ramps", "Senior Meals & Hydration", "Ocean Breeze Shaded Courtyard"],
+    },
+    {
+        "center_id": "CC-BK-08",
+        "name": "Brooklyn Central Library",
+        "address": "10 Grand Army Plaza, Brooklyn, NY 11238",
+        "neighborhood": "Prospect Heights / Park Slope",
+        "facility_type": "Flagship Public Library & Major Cooling Center",
+        "latitude": 40.6726,
+        "longitude": -73.9682,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Sun 9:00 AM - 8:00 PM",
+        "amenities": ["Central High-Capacity HVAC", "Multiple Hydration Stations", "Prospect Park Shaded Tree Canopy Nearby"],
+    },
+    {
+        "center_id": "CC-BK-09",
+        "name": "Crown Heights Community Mediation Center",
+        "address": "256 Kingston Ave, Brooklyn, NY 11213",
+        "neighborhood": "Crown Heights",
+        "facility_type": "Community Cooling Facility",
+        "latitude": 40.6698,
+        "longitude": -73.9427,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Fri 9:00 AM - 6:00 PM",
+        "amenities": ["Air Conditioning", "Water Dispenser", "First Aid"],
+    },
+    {
+        "center_id": "CC-BK-10",
+        "name": "Williamsburg Community Center",
+        "address": "195 Graham Ave, Brooklyn, NY 11206",
+        "neighborhood": "East Williamsburg",
+        "facility_type": "NYCHA Community Cooling Center",
+        "latitude": 40.7102,
+        "longitude": -73.9431,
+        "has_ac": True,
+        "wheelchair_accessible": True,
+        "hours": "Mon-Fri 9:00 AM - 7:00 PM",
+        "amenities": ["Air Conditioning", "Misting Fans", "Emergency Staff"],
+    },
+]
+
+
+def find_nearest_cooling_center_and_heat(
+    location_query: str = "Pitkin Ave & Mother Gaston Blvd, Brooklyn, NY",
+    current_lat: float | None = None,
+    current_lon: float | None = None,
+    forecast_high_f: float = 98.0,
+) -> dict[str, Any]:
+    """
+    Direct Citizen & Resident Heat Tool (Google Maps Platform + Gemini Live integration).
+    Given where a person is currently present (either via explicit lat/lon coordinates or street
+    address/intersection), calculates their real-time localized street-level heat feel (+offset),
+    identifies the closest air-conditioned cooling centers, generates walking route directions
+    with clickable Google Maps links, and produces a speech-ready conversational briefing
+    for Gemini Live spoken dialogue.
+
+    Args:
+        location_query: Address, intersection, or place description (e.g. 'Nostrand Ave & Church Ave',
+                        'Pitkin & Mother Gaston', '40.6725, -73.9142').
+        current_lat: Optional float latitude of the user's live position (e.g. from browser GPS).
+        current_lon: Optional float longitude of the user's live position.
+        forecast_high_f: Today's regional ambient forecast high in °F (default 98.0°F).
+
+    Returns:
+        Dictionary with resolved location, street heat feel, nearest cooling center details,
+        Google Maps directions URL, walking distance, safety tips, and Gemini Live spoken script.
+    """
+    # 1. Resolve user coordinates
+    if current_lat is not None and current_lon is not None:
+        user_lat = round(float(current_lat), 4)
+        user_lon = round(float(current_lon), 4)
+        geo_res = geocode_street_or_intersection(f"{user_lat}, {user_lon}")
+        user_desc = geo_res.get("matched_intersection") or f"{user_lat:.4f}, {user_lon:.4f}"
+    else:
+        geo_res = geocode_street_or_intersection(location_query)
+        user_lat = geo_res.get("latitude", 40.6694)
+        user_lon = geo_res.get("longitude", -73.9085)
+        user_desc = geo_res.get("matched_intersection") or geo_res.get("address") or location_query
+
+    # 2. Get local microclimate heat offset
+    pred = predict_location_heat_offset(f"{user_lat}, {user_lon}", forecast_high_f=forecast_high_f)
+    offset_f = pred.get("predicted_offset_f", 5.0)
+    street_feel_f = pred.get("expected_intersection_temp_f", forecast_high_f + offset_f)
+
+    # 3. Compute distance to all cooling centers
+    centers_with_distance = []
+    for c in BROOKLYN_COOLING_CENTERS:
+        d_km = _haversine_km(user_lat, user_lon, c["latitude"], c["longitude"])
+        # Urban Manhattan grid factor: street walking distance is roughly 1.25x straight-line distance
+        walk_km = d_km * 1.25
+        walk_miles = walk_km * 0.621371
+        # Average pedestrian walking speed: 4.8 km/h (80 m/min)
+        walk_mins = max(1, int(round((walk_km / 4.8) * 60)))
+        
+        # Google Maps Universal Directions URL
+        origin_str = f"{user_lat},{user_lon}"
+        dest_str = f"{c['latitude']},{c['longitude']}"
+        gmaps_dir_url = (
+            f"https://www.google.com/maps/dir/?api=1&origin={origin_str}&destination={dest_str}&travelmode=walking"
+        )
+        gmaps_search_url = (
+            f"https://www.google.com/maps/search/?api=1&query={urllib.parse.quote(c['name'] + ' ' + c['address'])}"
+        )
+        
+        centers_with_distance.append({
+            **c,
+            "straight_line_km": round(d_km, 2),
+            "walking_distance_km": round(walk_km, 2),
+            "walking_distance_miles": round(walk_miles, 2),
+            "estimated_walking_minutes": walk_mins,
+            "google_maps_directions_url": gmaps_dir_url,
+            "google_maps_search_url": gmaps_search_url,
+        })
+
+    centers_with_distance.sort(key=lambda x: x["walking_distance_km"])
+    nearest = centers_with_distance[0]
+    alternatives = centers_with_distance[1:3]
+
+    # 4. Assess danger category
+    if street_feel_f >= 103.0:
+        danger_tier = "🔴 EXTREME DANGER (Heat Stroke Imminent with Prolonged Exposure)"
+        urgency = "Seek indoor air conditioning immediately. Do not stay on unshaded pavement."
+    elif street_feel_f >= 95.0:
+        danger_tier = "🟠 HIGH DANGER (Heat Exhaustion Likely; Severe Strain on Vulnerable Groups)"
+        urgency = "Head to the nearest cooling center, hydrate frequently, and stay out of direct sunlight."
+    elif street_feel_f >= 90.0:
+        danger_tier = "🟡 EXTREME CAUTION (Elevated Heat Index)"
+        urgency = "Limit strenuous outdoor activity and seek shaded corridors."
+    else:
+        danger_tier = "🟢 MODERATE (Standard Summer Urban Conditions)"
+        urgency = "Stay hydrated and monitor local temperature changes."
+
+    # 5. Gemini Live Voice Briefing (natural, conversational, speech-optimized)
+    gemini_live_speech = (
+        f"Right now near {geo_res.get('neighborhood', 'your area')}, the street feels like {street_feel_f:.0f} degrees "
+        f"because of the local urban heat island effect—that's {offset_f:+.1f} degrees hotter than city forecasts. "
+        f"Your closest air-conditioned refuge is {nearest['name']}, located {nearest['walking_distance_miles']} miles away "
+        f"on {nearest['address']}. That is about a {nearest['estimated_walking_minutes']}-minute walk. "
+        f"I have opened a Google Maps walking route for you. Please stay hydrated and head indoors to cool down."
+    )
+
+    return {
+        "status": "ok",
+        "user_location": {
+            "query": location_query,
+            "latitude": user_lat,
+            "longitude": user_lon,
+            "matched_description": user_desc,
+            "neighborhood": geo_res.get("neighborhood", "Brooklyn"),
+            "nearest_geo_id": geo_res.get("nearest_geo_id", pred.get("geo_id", "36047091000")),
+            "geocoding_method": geo_res.get("resolution_method", "coordinates"),
+        },
+        "heat_exposure": {
+            "forecast_ambient_high_f": forecast_high_f,
+            "predicted_heat_offset_f": offset_f,
+            "street_level_feel_f": round(street_feel_f, 1),
+            "danger_tier": danger_tier,
+            "urgency_guidance": urgency,
+            "canopy_deficit_pct": pred.get("built_environment", {}).get("canopy_deficit_pct", 70.0),
+            "local_block_trees": pred.get("built_environment", {}).get("local_block_trees", 6),
+        },
+        "nearest_cooling_center": nearest,
+        "alternative_cooling_centers": alternatives,
+        "google_maps_integration": {
+            "directions_url": nearest["google_maps_directions_url"],
+            "place_url": nearest["google_maps_search_url"],
+            "origin_coordinates": f"{user_lat},{user_lon}",
+            "destination_coordinates": f"{nearest['latitude']},{nearest['longitude']}",
+            "walking_distance_miles": nearest["walking_distance_miles"],
+            "estimated_walking_minutes": nearest["estimated_walking_minutes"],
+        },
+        "safety_recommendations": [
+            "💧 Drink cool water every 15-20 minutes, even if you do not feel thirsty.",
+            f"🚶 Walk on the shaded side of the street toward {nearest['name']} ({nearest['estimated_walking_minutes']} min walk).",
+            "⚠️ Avoid strenuous walking between 11:00 AM and 5:00 PM.",
+            "🚑 If experiencing dizziness, confusion, nausea, or no sweating, call 911 immediately.",
+        ],
+        "gemini_live_speech": gemini_live_speech,
+    }
+

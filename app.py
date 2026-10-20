@@ -31,6 +31,7 @@ from agent.tools import (
     compare_candidate_sites,
     dispatch_gov_cooling_action,
     fetch_live_brooklyn_weather,
+    find_nearest_cooling_center_and_heat,
     generate_placement_recommendation,
     geocode_street_or_intersection,
     predict_location_heat_offset,
@@ -229,6 +230,36 @@ def orchestrate_agent_turn(
             "highlight_sites": ["BK-01", "BK-02", "BK-03", "BK-06"],
             "active_tab": "dispatch",
             "gov_dispatch": disp,
+        }
+
+    # 3bb. Direct Citizen / Resident Cooling Center & Walking Route ("nearest cooling center", "cooling center near", "find cooling center", "where can i cool down")
+    if any(k in q_low for k in ("nearest cooling", "closest cooling", "find cooling center", "cooling center near", "where can i cool", "cool down", "air conditioning near", "ac near")):
+        res_cc = find_nearest_cooling_center_and_heat(location_query=q, forecast_high_f=forecast_high_f)
+        tools_called.append(
+            f"find_nearest_cooling_center_and_heat(location_query='{q}', forecast_high_f={forecast_high_f})"
+        )
+        ncc = res_cc["nearest_cooling_center"]
+        he = res_cc["heat_exposure"]
+        ul = res_cc["user_location"]
+        reply = (
+            f"### ❄️ Closest Cooling Center & Route: **{ncc['name']}**\n\n"
+            f"- **Your Location:** `{ul['matched_description']}` ({ul['neighborhood']})\n"
+            f"- **Local Microclimate Heat Feel:** **{he['street_level_feel_f']}°F** (`{he['danger_tier']}` — {he['predicted_heat_offset_f']:+.1f}°F UHI offset)\n"
+            f"- **Walking Distance & Time:** **{ncc['walking_distance_miles']} miles** (~**{ncc['estimated_walking_minutes']} min walk**)\n"
+            f"- **Facility Address & Hours:** {ncc['address']} · `{ncc['hours']}`\n"
+            f"- **Amenities:** {', '.join(ncc['amenities'])}\n\n"
+            f"🗺️ **[Open Walking Directions in Google Maps]({ncc['google_maps_directions_url']})**\n\n"
+            f"**🎙️ Gemini Live Spoken Briefing:**\n"
+            f"> *\"{res_cc['gemini_live_speech']}\"*\n\n"
+            f"**Safety Checklist:**\n"
+            + "\n".join(f"- {s}" for s in res_cc["safety_recommendations"])
+        )
+        return {
+            "reply": llm_res["reply"] if llm_res else reply,
+            "tools_called": tools_called,
+            "highlight_sites": ["BK-01"],
+            "active_tab": "site",
+            "citizen_cooling_route": res_cc,
         }
 
     # 3c. Arbitrary Unmeasured Map Click / Coordinate Prediction ("40.xxx, -73.xxx" or "unmeasured")

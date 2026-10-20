@@ -19,6 +19,7 @@ from .tools import (
     compare_candidate_sites,
     dispatch_gov_cooling_action,
     fetch_live_brooklyn_weather,
+    find_nearest_cooling_center_and_heat,
     generate_placement_recommendation,
     geocode_street_or_intersection,
     predict_location_heat_offset,
@@ -72,6 +73,7 @@ CUSTOM_TOOLS = [
     generate_placement_recommendation,
     dispatch_gov_cooling_action,
     geocode_street_or_intersection,
+    find_nearest_cooling_center_and_heat,
     query_climate_dataset_summary,
 ]
 
