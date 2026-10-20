@@ -373,7 +373,7 @@ else:
     # -----------------------------------------------------------------------------
     # 9. MAP INTERACTION CONTROLS (DESIGNER-POLISHED ALIGNMENT & TYPOGRAPHY)
     # -----------------------------------------------------------------------------
-    control_col1, control_col2 = st.columns([1.65, 1.0], gap="medium")
+    control_col1, control_col2 = st.columns([1.0, 1.0], gap="medium")
 
     with control_col1:
         st.markdown("""
@@ -430,7 +430,7 @@ else:
     # -----------------------------------------------------------------------------
     # 10. MAIN SECTION: FOLIUM HEAT MAP & DETAILS / EXPLANATIONS PANEL
     # -----------------------------------------------------------------------------
-    map_col, details_col = st.columns([1.65, 1.0], gap="medium")
+    map_col, details_col = st.columns([1.0, 1.0], gap="medium")
 
     with map_col:
         st.markdown(f"""
