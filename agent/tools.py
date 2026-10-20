@@ -1272,6 +1272,7 @@ def generate_placement_recommendation(
 def dispatch_gov_cooling_action(
     location_query: str = "top_3_priority_sites",
     forecast_high_f: float = 98.0,
+    trigger_reason: str = "",
 ) -> dict[str, Any]:
     """
     Orchestrate and dispatch municipal cooling and climate resilience actions to NYC Government

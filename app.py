@@ -39,6 +39,12 @@ from agent.tools import (
     recommend_interventions,
     run_equity_audit,
 )
+from agent.persona_agent import (
+    Persona,
+    PERSONA_REGISTRY,
+    classify_persona,
+    execute_persona_agent_turn,
+)
 
 
 def _call_gemini_with_tools(message: str, history: list[dict[str, str]], forecast_high_f: float) -> dict[str, Any] | None:
@@ -90,6 +96,8 @@ def orchestrate_agent_turn(
     message: str,
     history: list[dict[str, str]] | None = None,
     forecast_high_f: float = 98.0,
+    persona: str | None = None,
+    user_coords: tuple[float, float] | None = None,
 ) -> dict[str, Any]:
     """
     Execute a conversational turn with the Brooklyn Urban Heat Resilience Assistant.
@@ -125,6 +133,8 @@ def orchestrate_agent_turn(
                 "tools_called": tools_called,
                 "highlight_sites": [],
                 "active_tab": None,
+                "persona": "city_planner",
+                "gemini_live_speech": f"I cannot predict heat in {out_city.title()} because our model is calibrated specifically on Brooklyn, New York.",
             }
 
     # 1b. Check for point-in-time weather forecasting, structural engineering, or vendor procurement guardrails
@@ -146,7 +156,23 @@ def orchestrate_agent_turn(
             "tools_called": tools_called,
             "highlight_sites": ["BK-01"],
             "active_tab": "site",
+            "persona": "city_planner",
+            "gemini_live_speech": "I cannot provide future date forecasts or certify engineering loads, but our 7-year baseline confirms this intersection crosses 95 degrees 26 days a summer.",
         }
+
+    # 1c. Persona-Aware Supervisor Routing
+    # If explicit persona is requested or query matches specialized persona patterns
+    detected_persona = classify_persona(q, explicit_persona=persona)
+    if persona in (Persona.RESIDENT_LIVE_LOCATION, Persona.EMERGENCY_MANAGEMENT_OFFICER, Persona.URBAN_FORESTRY_OFFICER) or (
+        detected_persona in (Persona.RESIDENT_LIVE_LOCATION, Persona.EMERGENCY_MANAGEMENT_OFFICER, Persona.URBAN_FORESTRY_OFFICER)
+        and persona != Persona.CITY_PLANNER
+    ):
+        return execute_persona_agent_turn(
+            query=q,
+            persona=detected_persona,
+            forecast_high_f=forecast_high_f,
+            user_coords=user_coords,
+        )
 
     # 2. Equity Audit intent ("Before I send it—did we actually reach the neighborhoods that need this most?" / "equity" / "audit" / "bias" / "race")
     if any(k in q_low for k in ("equity", "audit", "need this most", "fair", "bias", "race", "redlin", "industrial")):
@@ -902,6 +928,51 @@ INDEX_HTML = r"""<!DOCTYPE html>
       font-weight: 700;
       color: #e2e8f0;
     }
+    .persona-bar {
+      padding: 7px 12px;
+      background: #0f172a;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .persona-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .persona-btn:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+    .persona-btn.active {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+    }
+    .location-banner {
+      padding: 6px 12px;
+      background: rgba(14, 165, 233, 0.12);
+      border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: #bae6fd;
+    }
     .prompt-chips {
       padding: 8px 12px;
       background: #101829;
@@ -1156,21 +1227,36 @@ INDEX_HTML = r"""<!DOCTYPE html>
     <!-- Right Pane: Conversational ADK Agent -->
     <div class="right-pane">
       <div class="chat-header">
-        <h2>💬 Working Planner Conversation (Benchmarks + Unmeasured + Gov Dispatch)</h2>
-        <span style="font-size:11px;color:#6ee7b7;">● Live Tool-Calling Active</span>
+        <h2 id="chat-title">💬 Urban Heat Resilience Supervisor Agent</h2>
+        <span id="active-persona-badge" style="font-size:11px;padding:3px 9px;border-radius:12px;background:#1e3a8a;color:#93c5fd;font-weight:600;border:1px solid #3b82f6;">🏛️ City Planner</span>
       </div>
 
-      <div class="prompt-chips">
+      <!-- 4 Operational Personas Switcher -->
+      <div class="persona-bar">
+        <span style="font-size:10.5px;color:#64748b;font-weight:700;text-transform:uppercase;margin-right:2px;">Persona:</span>
+        <button type="button" class="persona-btn active" id="btn-city_planner" onclick="setPersona('city_planner')">🏛️ City Planner</button>
+        <button type="button" class="persona-btn" id="btn-emergency_manager" onclick="setPersona('emergency_manager')">🚨 Emergency Mgt</button>
+        <button type="button" class="persona-btn" id="btn-forestry_officer" onclick="setPersona('forestry_officer')">🌳 Urban Forestry</button>
+        <button type="button" class="persona-btn" id="btn-resident" onclick="setPersona('resident')">📍 Resident / Near Me</button>
+      </div>
+
+      <!-- Resident Live Location Bar (Visible when Resident persona is active) -->
+      <div class="location-banner" id="location-banner">
+        <span>📍 <b>Resident Location:</b> <span id="loc-display">40.6725, -73.9142 (Pitkin Ave, Brownsville)</span></span>
+        <button type="button" onclick="acquireDeviceLocation()" style="background:#0284c7;color:white;border:none;padding:3px 8px;border-radius:4px;font-size:11px;cursor:pointer;font-weight:600;">📡 Acquire Device GPS</button>
+      </div>
+
+      <div class="prompt-chips" id="prompt-chips-container">
         <span class="chip" onclick="askPreset('We can fund three cooling centers and a street tree program this budget cycle. Where should they go?')">1. Rank Top 3 Sites</span>
         <span class="chip" onclick="askPreset('Show the full rank table across all 8 corridors with priority_rank, raw_heat_rank, and rank_shift.')">📊 Full #1..#8 Ranking & Rank Shift</span>
-        <span class="chip" onclick="askPreset('Why is Pitkin Ave & Mother Gaston Blvd in Brownsville so much hotter than Park Slope?')">2. Why Is Pitkin Hotter? (ML.EXPLAIN_PREDICT)</span>
+        <span class="chip" onclick="askPreset('Why is 4th and Marsalis so much worse than two blocks north?')">2. Why Is Pitkin Hotter? (ML.EXPLAIN_PREDICT)</span>
         <span class="chip" onclick="askPreset('Predict heat offset for unmeasured coordinates 40.6652, -73.9124')">🎯 3. Predict Unmeasured Street (40.6652, -73.9124)</span>
-        <span class="chip" onclick="askPreset('How often does that area actually hit dangerous 95°F+ heat across the 7-year station history, and why is observed_at null?')">4. 7-Yr GHCN Frequency & observed_at=NULL</span>
-        <span class="chip" onclick="askPreset('Who lives around Fulton St & Pennsylvania Ave in East New York—how many seniors, how many without a car?')">5. Who Lives There? (12-Col ACS Seniors)</span>
-        <span class="chip" onclick="askPreset('I am down to two sites—Brownsville vs. East Flatbush—and have to pick one. Make the case for each.')">6. Weigh 2-Site Tradeoff</span>
-        <span class="chip" onclick="askPreset('Before I send it—run the equity audit. Did we actually reach the neighborhoods that need this most?')">7. Run Equity Audit</span>
+        <span class="chip" onclick="askPreset('How often does that area actually hit dangerous heat? Is it getting worse?')">4. 7-Yr GHCN Frequency & observed_at=NULL</span>
+        <span class="chip" onclick="askPreset('Who lives around that site—how many people, how old, how many without a car?')">5. Who Lives There? (12-Col ACS Seniors)</span>
+        <span class="chip" onclick="askPreset('I\'m down to two sites and have to pick one. Make the case for each.')">6. Weigh 2-Site Tradeoff</span>
+        <span class="chip" onclick="askPreset('Before I send it—did we actually reach the neighborhoods that need this most?')">7. Run Equity Audit</span>
         <span class="chip" onclick="askPreset('Dispatch government cooling intervention and multi-agency work orders for our top priority sites.')">🚨 8. Dispatch Gov Cooling</span>
-        <span class="chip" onclick="askPreset('Draft the official Placement Recommendation proposal I am taking to City Council in the morning.')">9. Draft Council Proposal</span>
+        <span class="chip" onclick="askPreset('Draft the proposal I\'m taking to council in the morning.')">9. Draft Council Proposal</span>
         <span class="chip warn" onclick="askPreset('Where should we put cooling centers in Phoenix tomorrow?')">10. Test Guardrail (Phoenix)</span>
       </div>
 
@@ -1540,6 +1626,109 @@ INDEX_HTML = r"""<!DOCTYPE html>
       alert('Copied City Council Placement Recommendation Markdown to clipboard!');
     }
 
+    let CURRENT_PERSONA = 'city_planner';
+    let USER_LAT = 40.6725;
+    let USER_LON = -73.9142;
+
+    const PERSONA_CHIPS = {
+      city_planner: [
+        { label: "1. Rank Top 3 Sites", text: "We can fund three cooling centers and a street tree program this budget cycle. Where should they go?" },
+        { label: "📊 Full #1..#8 Ranking", text: "Show the full rank table across all 8 corridors with priority_rank, raw_heat_rank, and rank_shift." },
+        { label: "2. Why Is Pitkin Hotter?", text: "Why is 4th and Marsalis so much worse than two blocks north?" },
+        { label: "🎯 3. Predict Unmeasured Street", text: "Predict heat offset for unmeasured coordinates 40.6652, -73.9124" },
+        { label: "4. 7-Yr GHCN Frequency", text: "How often does that area actually hit dangerous heat? Is it getting worse?" },
+        { label: "5. Who Lives There?", text: "Who lives around that site—how many people, how old, how many without a car?" },
+        { label: "6. Weigh 2-Site Tradeoff", text: "I'm down to two sites and have to pick one. Make the case for each." },
+        { label: "7. Run Equity Audit", text: "Before I send it—did we actually reach the neighborhoods that need this most?" },
+        { label: "🚨 8. Dispatch Gov Cooling", text: "Dispatch government cooling intervention and multi-agency work orders for our top priority sites." },
+        { label: "9. Draft Council Proposal", text: "Draft the proposal I'm taking to council in the morning." },
+        { label: "10. Test Guardrail (Phoenix)", text: "Where should we put cooling centers in Phoenix tomorrow?", warn: true }
+      ],
+      emergency_manager: [
+        { label: "🚨 Deploy Hydration Vans", text: "As an emergency management officer, dispatch mobile hydration vans and misting tents to high-vulnerability transit stops." },
+        { label: "⚠️ Senior Wellness Canvass", text: "Order emergency senior wellness checks for high-carless tracts in Brownsville and Coney Island." },
+        { label: "🚒 NYCEM Incident Manifest", text: "Dispatch government cooling action and multi-agency work orders for our top priority sites for a 98°F heatwave." },
+        { label: "📈 7-Yr Extreme Crossing Baseline", text: "How often does Brownsville hit dangerous heat above 95°F vs the airport station?" }
+      ],
+      forestry_officer: [
+        { label: "🌳 Canopy Deficit & Trees/km²", text: "As an urban forestry officer, what is the canopy deficit and street tree density at Pitkin Ave & Mother Gaston Blvd?" },
+        { label: "🍃 10-Year Street Tree Priority", text: "Rank the top 4 corridors for NYC Parks 10-year street tree planting canopy expansion." },
+        { label: "🔬 Vaulted Sidewalks vs Tree Pits", text: "What are the biophysical constraints between planting tree pits vs high-albedo cool pavement on commercial streets?" }
+      ],
+      resident: [
+        { label: "📍 Heat Near Me & Nearest Cooling", text: "Based on where I am present at 40.6725, -73.9142, what is the heatwave near to me and where is the nearest cooling center?" },
+        { label: "🚶 Google Maps Walking Route", text: "Where is the closest cooling center to Pitkin Ave and Mother Gaston Blvd and give me walking directions via Google Maps?" },
+        { label: "🎙️ Gemini Live: Read Safety Briefing", text: "I'm standing outside in Brownsville. How hot is it right now and is it safe to walk?" }
+      ]
+    };
+
+    function setPersona(personaKey) {
+      CURRENT_PERSONA = personaKey;
+      document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-${personaKey}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const locBanner = document.getElementById('location-banner');
+      if (locBanner) {
+        locBanner.style.display = personaKey === 'resident' ? 'flex' : 'none';
+      }
+
+      const badge = document.getElementById('active-persona-badge');
+      const titles = {
+        city_planner: "🏛️ City Planner",
+        emergency_manager: "🚨 Emergency Mgt",
+        forestry_officer: "🌳 Urban Forestry",
+        resident: "📍 Resident / Near Me"
+      };
+      if (badge) badge.textContent = titles[personaKey] || "🏛️ City Planner";
+
+      renderPromptChips(personaKey);
+    }
+
+    function renderPromptChips(personaKey) {
+      const container = document.getElementById('prompt-chips-container');
+      const chips = PERSONA_CHIPS[personaKey] || PERSONA_CHIPS.city_planner;
+      container.innerHTML = chips.map(c => `
+        <span class="chip ${c.warn ? 'warn' : ''}" onclick="askPreset('${c.text.replace(/'/g, "\\'")}')">${c.label}</span>
+      `).join('');
+    }
+
+    function acquireDeviceLocation() {
+      const display = document.getElementById('loc-display');
+      if (!navigator.geolocation) {
+        display.textContent = 'GPS not supported; using Pitkin & Mother Gaston (Brownsville)';
+        USER_LAT = 40.6725;
+        USER_LON = -73.9142;
+        return;
+      }
+      display.textContent = 'Acquiring GPS fix...';
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          USER_LAT = pos.coords.latitude;
+          USER_LON = pos.coords.longitude;
+          display.textContent = `${USER_LAT.toFixed(4)}, ${USER_LON.toFixed(4)} (GPS Acquired)`;
+          if (map) map.panTo([USER_LAT, USER_LON]);
+        },
+        err => {
+          display.textContent = '40.6725, -73.9142 (Pitkin Ave, Brownsville)';
+          USER_LAT = 40.6725;
+          USER_LON = -73.9142;
+        }
+      );
+    }
+
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("Speech synthesis is not supported on this browser.");
+      }
+    }
+
     function askPreset(text) {
       document.getElementById('chat-input').value = text;
       sendChat(new Event('submit'));
@@ -1569,11 +1758,40 @@ INDEX_HTML = r"""<!DOCTYPE html>
         const resp = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, forecast_high_f: FORECAST_F })
+          body: JSON.stringify({
+            message: text,
+            forecast_high_f: FORECAST_F,
+            persona: CURRENT_PERSONA,
+            user_lat: USER_LAT,
+            user_lon: USER_LON
+          })
         });
         const data = await resp.json();
         const traceHtml = (data.tools_called || []).map(t => `<div class="tool-trace">🔧 Tool Called: ${t}</div>`).join('<br>');
-        loadingDiv.innerHTML = `${traceHtml}<div>${marked.parse(data.reply || '')}</div>`;
+        
+        let speechHtml = '';
+        if (data.gemini_live_speech) {
+          const safeSpeech = data.gemini_live_speech.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          speechHtml = `
+            <div style="margin-top:10px;padding:8px 12px;background:#1e1b4b;border:1px solid #4338ca;border-radius:6px;display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:11.5px;color:#c7d2fe;">🎙️ <b>Gemini Live Audio Briefing:</b> <i>&ldquo;${data.gemini_live_speech}&rdquo;</i></span>
+              <button type="button" onclick="speakText('${safeSpeech}')" style="background:#4f46e5;color:white;border:none;padding:5px 10px;border-radius:4px;font-size:11px;cursor:pointer;white-space:nowrap;margin-left:8px;font-weight:600;">▶️ Play Audio</button>
+            </div>
+          `;
+        }
+
+        let mapsHtml = '';
+        if (data.google_maps_url) {
+          mapsHtml = `
+            <div style="margin-top:8px;">
+              <a href="${data.google_maps_url}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;background:#059669;color:white;text-decoration:none;padding:6px 12px;border-radius:6px;font-weight:600;font-size:11.5px;">
+                🗺️ Open Walking Route in Google Maps &rarr;
+              </a>
+            </div>
+          `;
+        }
+
+        loadingDiv.innerHTML = `${traceHtml}<div>${marked.parse(data.reply || '')}</div>${speechHtml}${mapsHtml}`;
         if (data.active_tab) switchTab(data.active_tab);
         if (data.gov_dispatch) renderDispatchTab(data.gov_dispatch);
         if (data.unmeasured_prediction) {
@@ -1677,7 +1895,22 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                 req = json.loads(raw)
                 message = req.get("message", "")
                 forecast_f = float(req.get("forecast_high_f", 98.0))
-                res = orchestrate_agent_turn(message=message, forecast_high_f=forecast_f)
+                persona = req.get("persona")
+                user_lat = req.get("user_lat")
+                user_lon = req.get("user_lon")
+                user_coords = None
+                if user_lat is not None and user_lon is not None:
+                    try:
+                        user_coords = (float(user_lat), float(user_lon))
+                    except (ValueError, TypeError):
+                        user_coords = None
+
+                res = orchestrate_agent_turn(
+                    message=message,
+                    forecast_high_f=forecast_f,
+                    persona=persona,
+                    user_coords=user_coords,
+                )
                 self._send_json(res)
             except Exception as exc:
                 traceback.print_exc()

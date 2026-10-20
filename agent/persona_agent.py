@@ -273,7 +273,8 @@ def execute_persona_agent_turn(
             f"**[{nearest['name']}]({gmaps['place_url']})**\n"
             f"- **Address:** {nearest['address']} ({nearest['neighborhood']})\n"
             f"- **Facility Type:** {nearest['facility_type']}\n"
-            f"- **Distance from You:** **{nearest['walking_distance_miles']} miles** (~{nearest['estimated_walking_minutes']} min walk)\n"
+            f"- **Walking Distance:** **{nearest['walking_distance_miles']} miles** (~{nearest['estimated_walking_minutes']} min walk)\n"
+            f"- **Estimated Walk Time:** **{nearest['estimated_walking_minutes']} minutes**\n"
             f"- **Operating Hours:** `{nearest['hours']}`\n"
             f"- **Amenities:** {', '.join(nearest['amenities'])}\n\n"
             f"👉 **[Click Here for Google Maps Walking Route to {nearest['name']}]({gmaps['directions_url']})**\n\n"
@@ -345,7 +346,7 @@ def execute_persona_agent_turn(
 
         reply += (
             "#### 📋 Tactical Triage Orders for Field Units:\n"
-            "1. **Mobile Hydration & Misting Vans (FDNY / NYCEM):** Deploy immediately to **Pitkin Ave & Mother Gaston Blvd** and **Livonia & Pennsylvania Ave**. Transit riders with no private vehicle (`78.6% carless rate`) are directly exposed at unshaded B14/B60 bus stops.\n"
+            "1. **Mobile Hydration Vans & Misting Tents (FDNY / NYCEM):** Deploy immediately to **Pitkin Ave & Mother Gaston Blvd** and **Livonia & Pennsylvania Ave**. Transit riders with no private vehicle (`78.6% carless rate`) are directly exposed at unshaded B14/B60 bus stops.\n"
             "2. **DFTA / DOHMH Senior Wellness Checks:** Canvass Census Tract `36047091000` (Brownsville) and Tract `36047032600` (Coney Island - 26.3% 65+ seniors). Verify operational residential AC and provide immediate transport to cooling shelters.\n"
             "3. **Street Hydrant Spray Caps:** Partner with DEP to distribute approved spray caps at high-heat intersections to prevent system water pressure drop while providing supervised neighborhood relief."
         )

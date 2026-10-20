@@ -161,6 +161,124 @@ class TestChallengeQuestions(unittest.TestCase):
         self.assertIn("Coastal Senior Blind Spot", reply)
         self.assertIn("Coney Island", reply)
 
+    def test_question_7_continuous_ranking_and_siting(self):
+        """
+        Q7: 'We can fund three cooling centers this summer. Where should they go?'
+        Must provide continuous #1..#8 ranking, rank shift (Delta), and Tier 1 top 3 capital siting.
+        """
+        q = "We can fund three cooling centers this summer. Where should they go?"
+        res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
+
+        self.assertIn("reply", res)
+        reply = res["reply"]
+
+        self.assertIn("Full Continuous Ranking", reply)
+        self.assertIn("Priority Rank", reply)
+        self.assertIn("Raw Heat Rank", reply)
+        self.assertIn("Pitkin Ave & Mother Gaston Blvd", reply)
+        self.assertIn("Tier 1 Immediate Capital", reply)
+        self.assertTrue(len(res.get("highlight_sites", [])) >= 3)
+
+    def test_persona_resident_live_location_and_maps(self):
+        """
+        Persona 4: Resident / Live Location ('Where I am present')
+        Must determine street heat feel vs city forecast, find nearest cooling center,
+        calculate walking ETA, generate clickable Google Maps directions URL,
+        and provide a clean Gemini Live speech briefing.
+        """
+        q = "Based on where I am present at 40.6725, -73.9142, what is the heatwave near to me and where is the nearest cooling center?"
+        res = orchestrate_agent_turn(
+            q,
+            history=[],
+            forecast_high_f=self.forecast_high_f,
+            persona="resident",
+            user_coords=(40.6725, -73.9142),
+        )
+
+        self.assertEqual(res.get("persona"), "resident")
+        self.assertIn("reply", res)
+        reply = res["reply"]
+
+        # Check nearest cooling center resolution
+        self.assertIn("Brownsville Library", reply)
+        self.assertIn("Walking Distance", reply)
+        self.assertIn("Estimated Walk Time", reply)
+        self.assertIn("Google Maps", reply)
+
+        # Check Google Maps URL
+        maps_url = res.get("google_maps_url")
+        self.assertIsNotNone(maps_url)
+        self.assertTrue(maps_url.startswith("https://www.google.com/maps/dir/"))
+        self.assertIn("destination=", maps_url)
+
+        # Check Gemini Live Speech audio string
+        speech = res.get("gemini_live_speech")
+        self.assertIsNotNone(speech)
+        self.assertTrue(len(speech) > 40)
+        self.assertNotIn("|", speech)
+        self.assertNotIn("##", speech)
+
+    def test_persona_emergency_management_officer(self):
+        """
+        Persona 2: Emergency Management Officer (NYCEM / FDNY)
+        Must provide tactical 24-48h emergency response, hydration vans,
+        misting tents, transit corridor triage, and senior welfare checks.
+        """
+        q = "As an emergency management officer, dispatch mobile hydration vans and misting tents to high-vulnerability transit stops."
+        res = orchestrate_agent_turn(
+            q,
+            history=[],
+            forecast_high_f=self.forecast_high_f,
+            persona="emergency_manager",
+        )
+
+        self.assertEqual(res.get("persona"), "emergency_manager")
+        self.assertIn("reply", res)
+        reply = res["reply"]
+
+        self.assertIn("NYCEM", reply)
+        self.assertIn("Mobile Hydration", reply)
+        self.assertIn("Misting Tent", reply)
+        self.assertIn("dispatch_gov_cooling_action", str(res.get("tools_called")))
+
+    def test_persona_urban_forestry_officer(self):
+        """
+        Persona 3: Sustainability / Urban Forestry Officer (NYC Parks)
+        Must provide canopy deficit analysis, street tree density,
+        10-year planting corridor priorities, and vaulted sidewalk trade-offs.
+        """
+        q = "As an urban forestry officer, what is the canopy deficit and street tree density at Pitkin Ave & Mother Gaston Blvd?"
+        res = orchestrate_agent_turn(
+            q,
+            history=[],
+            forecast_high_f=self.forecast_high_f,
+            persona="forestry_officer",
+        )
+
+        self.assertEqual(res.get("persona"), "forestry_officer")
+        self.assertIn("reply", res)
+        reply = res["reply"]
+
+        self.assertIn("NYC Parks", reply)
+        self.assertTrue("canopy_deficit_pct" in reply or "Canopy Deficit" in reply)
+        self.assertTrue("trees_per_km2" in reply or "trees/km²" in reply)
+        self.assertIn("Pitkin Ave", reply)
+
+    def test_guardrail_out_of_bounds_phoenix(self):
+        """
+        Guardrail: Out-of-Footprint City Refusal
+        Must refuse out-of-bounds city (Phoenix) without fabricating numbers.
+        """
+        q = "Where should we put cooling centers in Phoenix tomorrow?"
+        res = orchestrate_agent_turn(q, history=[], forecast_high_f=self.forecast_high_f)
+
+        self.assertIn("reply", res)
+        reply = res["reply"]
+
+        self.assertIn("Out-of-Footprint Refusal", reply)
+        self.assertIn("Phoenix", reply)
+        self.assertIn("Brooklyn", reply)
+
 
 if __name__ == "__main__":
     unittest.main()
