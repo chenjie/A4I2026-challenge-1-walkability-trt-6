@@ -1,67 +1,522 @@
 {
   "BK-01": [
-    { "factor": "Impervious Surface Coverage", "attribution_f": 2.9, "share_pct": 52, "description": "High asphalt density and minimal reflective surface." },
-    { "factor": "Low Tree Canopy (< 7%)", "attribution_f": 1.8, "share_pct": 32, "description": "Severe deficit of mature shade trees on primary arterials." },
-    { "factor": "Thermal Mass (Dense Masonry)", "attribution_f": 0.9, "share_pct": 16, "description": "Heat absorption by multi-story brick/concrete structures." }
+    {
+      "factor": "Impervious Surface Coverage",
+      "attribution_f": 2.9,
+      "share_pct": 52,
+      "description": "High asphalt density and minimal reflective surface."
+    },
+    {
+      "factor": "Low Tree Canopy (< 7%)",
+      "attribution_f": 1.8,
+      "share_pct": 32,
+      "description": "Severe deficit of mature shade trees on primary arterials."
+    },
+    {
+      "factor": "Thermal Mass (Dense Masonry)",
+      "attribution_f": 0.9,
+      "share_pct": 16,
+      "description": "Heat absorption by multi-story brick/concrete structures."
+    }
   ],
   "BK-02": [
-    { "factor": "Unshaded Commercial Arterials", "attribution_f": 2.7, "share_pct": 53, "description": "Wide, dark pavement without vegetative buffers." },
-    { "factor": "Industrial Asphalt Surface", "attribution_f": 1.6, "share_pct": 31, "description": "Heavy industrial yards retaining heat." },
-    { "factor": "Low Roof Albedo Reflectance", "attribution_f": 0.8, "share_pct": 16, "description": "Dark tar flat roofs absorbing daytime solar radiation." }
+    {
+      "factor": "Unshaded Commercial Arterials",
+      "attribution_f": 2.7,
+      "share_pct": 53,
+      "description": "Wide, dark pavement without vegetative buffers."
+    },
+    {
+      "factor": "Industrial Asphalt Surface",
+      "attribution_f": 1.6,
+      "share_pct": 31,
+      "description": "Heavy industrial yards retaining heat."
+    },
+    {
+      "factor": "Low Roof Albedo Reflectance",
+      "attribution_f": 0.8,
+      "share_pct": 16,
+      "description": "Dark tar flat roofs absorbing daytime solar radiation."
+    }
   ],
   "BK-03": [
-    { "factor": "High Impervious Fraction", "attribution_f": 2.5, "share_pct": 53, "description": "Over 82% of tract covered by non-permeable surfaces." },
-    { "factor": "Zero Street Frontage Setback", "attribution_f": 1.4, "share_pct": 30, "description": "Continuous commercial storefronts capturing radiative heat." },
-    { "factor": "Elevated Subway Thermal Trap", "attribution_f": 0.8, "share_pct": 17, "description": "Steel and ballast infrastructure radiating heat to sidewalks." }
+    {
+      "factor": "High Impervious Fraction",
+      "attribution_f": 2.5,
+      "share_pct": 53,
+      "description": "Over 82% of tract covered by non-permeable surfaces."
+    },
+    {
+      "factor": "Zero Street Frontage Setback",
+      "attribution_f": 1.4,
+      "share_pct": 30,
+      "description": "Continuous commercial storefronts capturing radiative heat."
+    },
+    {
+      "factor": "Elevated Subway Thermal Trap",
+      "attribution_f": 0.8,
+      "share_pct": 17,
+      "description": "Steel and ballast infrastructure radiating heat to sidewalks."
+    }
   ],
   "BK-04": [
-    { "factor": "Brownstone Masonry Density", "attribution_f": 2.2, "share_pct": 52, "description": "Historic brick blocks storing and re-radiating heat." },
-    { "factor": "Transit Strip Heat Retention", "attribution_f": 1.3, "share_pct": 31, "description": "Fulton Street commercial corridor traffic and pavement." },
-    { "factor": "Sparse Secondary Canopy", "attribution_f": 0.7, "share_pct": 17, "description": "Inconsistent tree cover between avenues." }
+    {
+      "factor": "Brownstone Masonry Density",
+      "attribution_f": 2.2,
+      "share_pct": 52,
+      "description": "Historic brick blocks storing and re-radiating heat."
+    },
+    {
+      "factor": "Transit Strip Heat Retention",
+      "attribution_f": 1.3,
+      "share_pct": 31,
+      "description": "Fulton Street commercial corridor traffic and pavement."
+    },
+    {
+      "factor": "Sparse Secondary Canopy",
+      "attribution_f": 0.7,
+      "share_pct": 17,
+      "description": "Inconsistent tree cover between avenues."
+    }
   ],
   "BK-05": [
-    { "factor": "Expressway Corridor (Gowanus I-278)", "attribution_f": 2.1, "share_pct": 58, "description": "Elevated highway concrete envelope." },
-    { "factor": "Low Vegetative Green Index", "attribution_f": 1.0, "share_pct": 28, "description": "Industrial slope with minimal public parks." },
-    { "factor": "Industrial Port Concrete", "attribution_f": 0.5, "share_pct": 14, "description": "Waterfront warehousing and shipping asphalt." }
+    {
+      "factor": "Expressway Corridor (Gowanus I-278)",
+      "attribution_f": 2.1,
+      "share_pct": 58,
+      "description": "Elevated highway concrete envelope."
+    },
+    {
+      "factor": "Low Vegetative Green Index",
+      "attribution_f": 1.0,
+      "share_pct": 28,
+      "description": "Industrial slope with minimal public parks."
+    },
+    {
+      "factor": "Industrial Port Concrete",
+      "attribution_f": 0.5,
+      "share_pct": 14,
+      "description": "Waterfront warehousing and shipping asphalt."
+    }
   ],
   "BK-06": [
-    { "factor": "Unshaded Boardwalk & Concrete", "attribution_f": 1.9, "share_pct": 59, "description": "Expansive non-shaded public walkways." },
-    { "factor": "High Senior Concentration Effect", "attribution_f": 0.8, "share_pct": 25, "description": "Disproportionate residential exposure for elderly." },
-    { "factor": "High Thermal Absorption Pavement", "attribution_f": 0.5, "share_pct": 16, "description": "Unpainted surface parking and commercial lots." }
+    {
+      "factor": "Unshaded Boardwalk & Concrete",
+      "attribution_f": 1.9,
+      "share_pct": 59,
+      "description": "Expansive non-shaded public walkways."
+    },
+    {
+      "factor": "High Senior Concentration Effect",
+      "attribution_f": 0.8,
+      "share_pct": 25,
+      "description": "Disproportionate residential exposure for elderly."
+    },
+    {
+      "factor": "High Thermal Absorption Pavement",
+      "attribution_f": 0.5,
+      "share_pct": 16,
+      "description": "Unpainted surface parking and commercial lots."
+    }
   ],
   "BK-07": [
-    { "factor": "Arterial Surface Heat", "attribution_f": 1.6, "share_pct": 57, "description": "Utica Avenue traffic and dark asphalt." },
-    { "factor": "Multi-Family Building Footprint", "attribution_f": 0.8, "share_pct": 29, "description": "High volume residential structures." },
-    { "factor": "Moderate Tree Canopy", "attribution_f": 0.4, "share_pct": 14, "description": "Eastern Parkway median provides partial mitigation." }
+    {
+      "factor": "Arterial Surface Heat",
+      "attribution_f": 1.6,
+      "share_pct": 57,
+      "description": "Utica Avenue traffic and dark asphalt."
+    },
+    {
+      "factor": "Multi-Family Building Footprint",
+      "attribution_f": 0.8,
+      "share_pct": 29,
+      "description": "High volume residential structures."
+    },
+    {
+      "factor": "Moderate Tree Canopy",
+      "attribution_f": 0.4,
+      "share_pct": 14,
+      "description": "Eastern Parkway median provides partial mitigation."
+    }
   ],
   "BK-08": [
-    { "factor": "Industrial Logistics Asphalt", "attribution_f": 1.5, "share_pct": 65, "description": "Maritime terminals and wide unshaded roads." },
-    { "factor": "Harbor Breeze Cooling Offset", "attribution_f": -0.8, "share_pct": -35, "description": "Coastal sea breeze providing partial thermal relief." },
-    { "factor": "Cobblestone & Brick Retaining Heat", "attribution_f": 1.4, "share_pct": 60, "description": "Dense historic pavement retaining solar gain." }
+    {
+      "factor": "Industrial Logistics Asphalt",
+      "attribution_f": 1.5,
+      "share_pct": 65,
+      "description": "Maritime terminals and wide unshaded roads."
+    },
+    {
+      "factor": "Harbor Breeze Cooling Offset",
+      "attribution_f": -0.8,
+      "share_pct": -35,
+      "description": "Coastal sea breeze providing partial thermal relief."
+    },
+    {
+      "factor": "Cobblestone & Brick Retaining Heat",
+      "attribution_f": 1.4,
+      "share_pct": 60,
+      "description": "Dense historic pavement retaining solar gain."
+    }
   ],
   "BK-09": [
-    { "factor": "Transit Corridor Activity", "attribution_f": 1.4, "share_pct": 78, "description": "High bus and pedestrian density on Flatbush Ave." },
-    { "factor": "Commercial Storefront Footprint", "attribution_f": 0.7, "share_pct": 39, "description": "Awnings and unshaded sidewalks." },
-    { "factor": "Intermittent Street Foliage", "attribution_f": -0.3, "share_pct": -17, "description": "Side street residential plantings." }
+    {
+      "factor": "Transit Corridor Activity",
+      "attribution_f": 1.4,
+      "share_pct": 78,
+      "description": "High bus and pedestrian density on Flatbush Ave."
+    },
+    {
+      "factor": "Commercial Storefront Footprint",
+      "attribution_f": 0.7,
+      "share_pct": 39,
+      "description": "Awnings and unshaded sidewalks."
+    },
+    {
+      "factor": "Intermittent Street Foliage",
+      "attribution_f": -0.3,
+      "share_pct": -17,
+      "description": "Side street residential plantings."
+    }
   ],
   "BK-10": [
-    { "factor": "Commercial High-Rise Geometry", "attribution_f": 1.6, "share_pct": 65, "description": "Glass and steel facades reflecting solar radiation." },
-    { "factor": "Tower Shade Relief", "attribution_f": -0.8, "share_pct": -32, "description": "Deep building shadows during morning/evening." },
-    { "factor": "HVAC Waste Heat", "attribution_f": 0.3, "share_pct": 12, "description": "Commercial building cooling reject heat." }
+    {
+      "factor": "Commercial High-Rise Geometry",
+      "attribution_f": 1.6,
+      "share_pct": 65,
+      "description": "Glass and steel facades reflecting solar radiation."
+    },
+    {
+      "factor": "Tower Shade Relief",
+      "attribution_f": -0.8,
+      "share_pct": -32,
+      "description": "Deep building shadows during morning/evening."
+    },
+    {
+      "factor": "HVAC Waste Heat",
+      "attribution_f": 0.3,
+      "share_pct": 12,
+      "description": "Commercial building cooling reject heat."
+    }
   ],
   "BK-11": [
-    { "factor": "Low Setback Retail Blocks", "attribution_f": 0.9, "share_pct": 60, "description": "Paved sidewalks on Bedford Ave." },
-    { "factor": "East River Airflow", "attribution_f": -0.5, "share_pct": -33, "description": "River breeze mitigating peak afternoon exposure." },
-    { "factor": "Modest Street Foliage", "attribution_f": 0.0, "share_pct": 0, "description": "Recent street tree saplings not yet mature." }
+    {
+      "factor": "Low Setback Retail Blocks",
+      "attribution_f": 0.9,
+      "share_pct": 60,
+      "description": "Paved sidewalks on Bedford Ave."
+    },
+    {
+      "factor": "East River Airflow",
+      "attribution_f": -0.5,
+      "share_pct": -33,
+      "description": "River breeze mitigating peak afternoon exposure."
+    },
+    {
+      "factor": "Modest Street Foliage",
+      "attribution_f": 0.0,
+      "share_pct": 0,
+      "description": "Recent street tree saplings not yet mature."
+    }
   ],
   "BK-12": [
-    { "factor": "Waterfront Promenade Airflow", "attribution_f": -1.4, "share_pct": -60, "description": "Cool marine boundary layer from NY Harbor." },
-    { "factor": "Dense Historic Tree Canopy", "attribution_f": -0.9, "share_pct": -40, "description": "Continuous century-old tree shade." },
-    { "factor": "Low Surface Parking Ratio", "attribution_f": 1.1, "share_pct": 50, "description": "Paved townhome streets." }
+    {
+      "factor": "Waterfront Promenade Airflow",
+      "attribution_f": -1.4,
+      "share_pct": -60,
+      "description": "Cool marine boundary layer from NY Harbor."
+    },
+    {
+      "factor": "Dense Historic Tree Canopy",
+      "attribution_f": -0.9,
+      "share_pct": -40,
+      "description": "Continuous century-old tree shade."
+    },
+    {
+      "factor": "Low Surface Parking Ratio",
+      "attribution_f": 1.1,
+      "share_pct": 50,
+      "description": "Paved townhome streets."
+    }
   ],
   "BK-13": [
-    { "factor": "Prospect Park Forest Microclimate", "attribution_f": -2.4, "share_pct": -62, "description": "500+ acre urban forest offering massive evaporative cooling." },
-    { "factor": "Mature Oak & Elm Canopy", "attribution_f": -1.5, "share_pct": -38, "description": "Over 45% street canopy density." },
-    { "factor": "High Albedo Limestone Buildings", "attribution_f": 0.8, "share_pct": 21, "description": "Light-colored facades reflecting heat." }
+    {
+      "factor": "Prospect Park Forest Microclimate",
+      "attribution_f": -2.4,
+      "share_pct": -62,
+      "description": "500+ acre urban forest offering massive evaporative cooling."
+    },
+    {
+      "factor": "Mature Oak & Elm Canopy",
+      "attribution_f": -1.5,
+      "share_pct": -38,
+      "description": "Over 45% street canopy density."
+    },
+    {
+      "factor": "High Albedo Limestone Buildings",
+      "attribution_f": 0.8,
+      "share_pct": 21,
+      "description": "Light-colored facades reflecting heat."
+    }
+  ],
+  "DAL-01": [
+    {
+      "factor": "Commercial Strip Asphalt & Parking",
+      "attribution_f": 4.1,
+      "share_pct": 50,
+      "description": "Massive unshaded parking lots and wide multi-lane blacktop."
+    },
+    {
+      "factor": "Severe Canopy Deficit (< 5%)",
+      "attribution_f": 2.6,
+      "share_pct": 32,
+      "description": "Near-zero mature tree shade along sidewalk traverses."
+    },
+    {
+      "factor": "Industrial Corrugated Metal Absorption",
+      "attribution_f": 1.5,
+      "share_pct": 18,
+      "description": "Low-albedo industrial metal building envelopes."
+    }
+  ],
+  "DAL-02": [
+    {
+      "factor": "Industrial Concrete & Heavy Truck Corridors",
+      "attribution_f": 3.8,
+      "share_pct": 51,
+      "description": "High thermal mass logistics warehouses and cement surfaces."
+    },
+    {
+      "factor": "Absence of Vegetative Buffers",
+      "attribution_f": 2.3,
+      "share_pct": 31,
+      "description": "Unbuffered rights-of-way along Hampton Road."
+    },
+    {
+      "factor": "Low Roof Albedo Factor",
+      "attribution_f": 1.3,
+      "share_pct": 18,
+      "description": "Dark industrial roofing radiating downwards."
+    }
+  ],
+  "DAL-03": [
+    {
+      "factor": "Wide Arterial Highway Geometry",
+      "attribution_f": 3.4,
+      "share_pct": 49,
+      "description": "Six-lane arterial with concrete medians radiating solar heat."
+    },
+    {
+      "factor": "Impervious Commercial Strip Density",
+      "attribution_f": 2.2,
+      "share_pct": 32,
+      "description": "Strip retail footprint lacking urban green space."
+    },
+    {
+      "factor": "Subsurface Heat Retention",
+      "attribution_f": 1.3,
+      "share_pct": 19,
+      "description": "Heat island accumulation from continuous paved surface."
+    }
+  ],
+  "DAL-04": [
+    {
+      "factor": "Urban Residential Masonry & Asphalt",
+      "attribution_f": 3.1,
+      "share_pct": 51,
+      "description": "Dense single-story residential lots with dark shingle roofs."
+    },
+    {
+      "factor": "Street Tree Canopy Gap",
+      "attribution_f": 1.9,
+      "share_pct": 31,
+      "description": "Young saplings providing insufficient walking canopy."
+    },
+    {
+      "factor": "Topographic Basin Thermal Trapping",
+      "attribution_f": 1.1,
+      "share_pct": 18,
+      "description": "Valley geography slowing convective air movement."
+    }
+  ],
+  "DAL-05": [
+    {
+      "factor": "High Density Apartment Impervious Surface",
+      "attribution_f": 2.9,
+      "share_pct": 50,
+      "description": "Continuous paved multi-family parking lots."
+    },
+    {
+      "factor": "Pedestrian Walkway Exposure",
+      "attribution_f": 1.8,
+      "share_pct": 31,
+      "description": "High volume pedestrian transit paths with 0% tree shade."
+    },
+    {
+      "factor": "HVAC Heat Rejection Density",
+      "attribution_f": 1.1,
+      "share_pct": 19,
+      "description": "Wall-unit air conditioner exhaust concentrated along alleys."
+    }
+  ],
+  "DAL-06": [
+    {
+      "factor": "Retail Center Asphalt Density",
+      "attribution_f": 2.6,
+      "share_pct": 50,
+      "description": "Unshaded commercial strip centers."
+    },
+    {
+      "factor": "Canopy Deficit on Transit Corridors",
+      "attribution_f": 1.6,
+      "share_pct": 31,
+      "description": "Absence of bus stop shelter shade."
+    },
+    {
+      "factor": "Industrial Pavement Heat Sink",
+      "attribution_f": 1.0,
+      "share_pct": 19,
+      "description": "Heavy vehicle staging lots."
+    }
+  ],
+  "DAL-07": [
+    {
+      "factor": "Medical Complex Concrete Structures",
+      "attribution_f": 2.3,
+      "share_pct": 50,
+      "description": "Multi-level parking garages and hospital facilities."
+    },
+    {
+      "factor": "Arterial Traffic Radiant Heat",
+      "attribution_f": 1.4,
+      "share_pct": 30,
+      "description": "High vehicle volume on Harry Hines Blvd."
+    },
+    {
+      "factor": "Surface Parking Solar Absorption",
+      "attribution_f": 0.9,
+      "share_pct": 20,
+      "description": "Expansive non-reflective parking."
+    }
+  ],
+  "DAL-08": [
+    {
+      "factor": "Historic Brick & Paved Streetscapes",
+      "attribution_f": 2.0,
+      "share_pct": 53,
+      "description": "Dense brick facades and dark street pavement."
+    },
+    {
+      "factor": "High Building Envelope Density",
+      "attribution_f": 1.1,
+      "share_pct": 29,
+      "description": "Canyon effect along commercial corridors."
+    },
+    {
+      "factor": "Partial Entertainment Patio Shading",
+      "attribution_f": 0.7,
+      "share_pct": 18,
+      "description": "Canopies partially reducing pedestrian exposure."
+    }
+  ],
+  "DAL-09": [
+    {
+      "factor": "Commercial District Asphalt",
+      "attribution_f": 1.4,
+      "share_pct": 67,
+      "description": "Paved boutique parking and retail sidewalks."
+    },
+    {
+      "factor": "Neighborhood Mature Canopy",
+      "attribution_f": -0.5,
+      "share_pct": -24,
+      "description": "Adjacent residential oak trees providing cooling."
+    },
+    {
+      "factor": "Moderate Building Setback",
+      "attribution_f": 1.2,
+      "share_pct": 57,
+      "description": "Pedestrian avenues capturing daytime heat."
+    }
+  ],
+  "DAL-10": [
+    {
+      "factor": "Downtown Canyon Glass/Concrete",
+      "attribution_f": 1.6,
+      "share_pct": 89,
+      "description": "High rise commercial building walls."
+    },
+    {
+      "factor": "Skyscraper Shadow Relief",
+      "attribution_f": -0.9,
+      "share_pct": -50,
+      "description": "Tall towers casting elongated street shadows."
+    },
+    {
+      "factor": "Street Pavement Retention",
+      "attribution_f": 1.1,
+      "share_pct": 61,
+      "description": "Dense downtown street grid."
+    }
+  ],
+  "DAL-11": [
+    {
+      "factor": "Retail & Mixed Use Streetscape",
+      "attribution_f": 0.8,
+      "share_pct": 100,
+      "description": "Mid-rise urban fabric."
+    },
+    {
+      "factor": "Street Tree Landscaping Buffers",
+      "attribution_f": -0.4,
+      "share_pct": -50,
+      "description": "Recent municipality plantings mitigating heat."
+    },
+    {
+      "factor": "Paved Street Radiation",
+      "attribution_f": 0.0,
+      "share_pct": 0,
+      "description": "Standard roadway asphalt."
+    }
+  ],
+  "DAL-12": [
+    {
+      "factor": "Suburban Residential Tree Canopy",
+      "attribution_f": -1.4,
+      "share_pct": -78,
+      "description": "Over 38% residential tree canopy coverage."
+    },
+    {
+      "factor": "Permeable Yard Surface Fraction",
+      "attribution_f": -0.9,
+      "share_pct": -50,
+      "description": "Expansive grass and soil yards absorbing moisture."
+    },
+    {
+      "factor": "Residential Street Pavement",
+      "attribution_f": 0.5,
+      "share_pct": 28,
+      "description": "Low volume local streets."
+    }
+  ],
+  "DAL-13": [
+    {
+      "factor": "White Rock Lake Water Boundary Layer",
+      "attribution_f": -2.5,
+      "share_pct": -71,
+      "description": "Water body evaporative cooling and lake breeze."
+    },
+    {
+      "factor": "Dense Riparian Forest Canopy",
+      "attribution_f": -1.6,
+      "share_pct": -46,
+      "description": "Parkland forest buffer."
+    },
+    {
+      "factor": "Park Road Asphalt",
+      "attribution_f": 0.6,
+      "share_pct": 17,
+      "description": "Paved perimeter park drive."
+    }
   ]
 }
