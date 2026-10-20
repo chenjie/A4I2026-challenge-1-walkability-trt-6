@@ -107,7 +107,7 @@ with st.sidebar:
     st.markdown("<hr style='border-color: #1E293B; margin: 20px 0 14px 0;'>", unsafe_allow_html=True)
     
     # City Selector (Analysis Target City)
-    st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px;'>Analysis Target City</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #94A3B8; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px;'>Analysis Target City</p>", unsafe_allow_html=True)
     city_options = ["New York — Brooklyn", "Dallas, Texas", "Chicago, Illinois (Locked)"]
     selected_city_val = st.selectbox(
         "City",
@@ -116,6 +116,22 @@ with st.sidebar:
         label_visibility="collapsed"
     )
     st.session_state["selected_city"] = selected_city_val
+
+    # Decision Persona Selector
+    st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #94A3B8; font-weight: 700; letter-spacing: 0.08em; margin-top: 14px; margin-bottom: 4px;'>Decision Persona</p>", unsafe_allow_html=True)
+    persona_options = [
+        "City Planner",
+        "Emergency Management Officer",
+        "Sustainability / Urban Forestry Officer"
+    ]
+    curr_persona_idx = persona_options.index(st.session_state["selected_persona"]) if st.session_state["selected_persona"] in persona_options else 0
+    selected_persona_val = st.selectbox(
+        "Decision Persona",
+        persona_options,
+        index=curr_persona_idx,
+        label_visibility="collapsed"
+    )
+    st.session_state["selected_persona"] = selected_persona_val
 
     # Data Mode Toggle Indicator
     st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
@@ -194,85 +210,127 @@ with header_col2:
 
 
 # -----------------------------------------------------------------------------
-# 6. PERSONA SELECTOR
+# 6. EXECUTIVE FOCUS BANNER (TOP OF MAIN SCREEN)
 # -----------------------------------------------------------------------------
-persona_options = [
-    "City Planner",
-    "Emergency Management Officer",
-    "Sustainability / Urban Forestry Officer"
-]
-
-try:
-    active_persona = st.segmented_control(
-        "Active Decision Persona",
-        options=persona_options,
-        default=st.session_state["selected_persona"],
-        label_visibility="collapsed"
-    )
-    if active_persona:
-        st.session_state["selected_persona"] = active_persona
-except AttributeError:
-    active_persona = st.radio(
-        "Active Decision Persona",
-        options=persona_options,
-        index=persona_options.index(st.session_state["selected_persona"]),
-        horizontal=True,
-        label_visibility="collapsed"
-    )
-    st.session_state["selected_persona"] = active_persona
-
 persona_context = {
     "City Planner": {
+        "icon": "🏛️",
+        "agency": "NYC DOHMH & Dept of City Planning",
         "focus": "Permanent DOHMH Cooling Center Siting & Council Budget Defense",
         "badge_color": "#1769E0",
-        "desc": "Prioritizing permanent public facility investments in transit-accessible, high-offset neighborhoods.",
+        "desc": "Prioritizing permanent public facility investments and indoor climate shelters in transit-accessible, high-offset neighborhoods.",
         "zoom_desc": "🔭 Zoomed Out (11.5x) · Boroughwide Siting View",
-        "zoom_pill_style": "background-color: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE;"
+        "zoom_pill_style": "background-color: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE;",
+        "kpi_metrics": {
+            "title1": "Highest Heat Offset",
+            "val1": f"+{df_intersections['predicted_offset_f'].max():.1f}°F",
+            "sub1": f"{df_intersections.loc[df_intersections['predicted_offset_f'].idxmax()]['neighborhood']} (Peak Microclimate)",
+            "cls1": "hot",
+            "title2": "Lowest Heat Offset",
+            "val2": f"{df_intersections['predicted_offset_f'].min():.1f}°F",
+            "sub2": f"{df_intersections.loc[df_intersections['predicted_offset_f'].idxmin()]['neighborhood']} (Baseline Reference)",
+            "cls2": "emerald",
+            "title3": "Target Cooling Sites",
+            "val3": "3 Sites",
+            "sub3": "DOHMH Permanent Centers Needed",
+            "cls3": "primary",
+            "title4": "Capital Priority Sites",
+            "val4": f"{(df_intersections['priority_score'] >= 80).sum()} / {len(df_intersections)}",
+            "sub4": "Priority Score ≥ 80 (Urgent)",
+            "cls4": "warning"
+        }
     },
     "Emergency Management Officer": {
+        "icon": "⚡",
+        "agency": "NYCEM (Emergency Management)",
         "focus": "NYCEM Tactical Hydration Truck Deployment & Senior Wellness Checks",
         "badge_color": "#DC2626",
-        "desc": "Deploying emergency mobile assets to streets crossing extreme heat thresholds during hot afternoons.",
+        "desc": "Deploying emergency mobile assets and dispatching door-to-door senior wellness teams to blocks crossing extreme heat thresholds.",
         "zoom_desc": "🎯 Zoomed In (13.8x) · Tactical Dispatch Hotspots",
-        "zoom_pill_style": "background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5;"
+        "zoom_pill_style": "background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5;",
+        "kpi_metrics": {
+            "title1": "Acute Heatwave Peak",
+            "val1": f"+{df_intersections['predicted_offset_f'].max():.1f}°F",
+            "sub1": "Brownsville Heat Epicenter",
+            "cls1": "hot",
+            "title2": "Tactical Fleet Assigned",
+            "val2": "2 Units",
+            "sub2": "NYCEM Hydration Trucks Staged",
+            "cls2": "hot",
+            "title3": "Vulnerable Residents",
+            "val3": "36,100",
+            "sub3": "High-Risk Seniors in Hotspot Tracts",
+            "cls3": "warning",
+            "title4": "Peak Zero-Vehicle Rate",
+            "val4": f"{df_intersections['no_vehicle_rate'].max():.1f}%",
+            "sub4": "Coney Island (Transit Dependent)",
+            "cls4": "primary"
+        }
     },
     "Sustainability / Urban Forestry Officer": {
+        "icon": "🌳",
+        "agency": "NYC Parks & Mayor's Office of Climate & Environmental Justice",
         "focus": "NYC Parks Tree Corridors & Cool Pavement Capital Planning",
         "badge_color": "#059669",
-        "desc": "Targeting interventions where impervious surface fraction and canopy deficit drive microclimate heat.",
+        "desc": "Targeting multi-year capital interventions where impervious surface fraction, pavement thermal mass, and tree canopy deficit drive microclimate heat.",
         "zoom_desc": "🌳 Corridor Zoom (12.6x) · Canopy Deficit & Albedo View",
-        "zoom_pill_style": "background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0;"
+        "zoom_pill_style": "background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0;",
+        "kpi_metrics": {
+            "title1": "Corridor Heat Deficit",
+            "val1": f"+{df_intersections[df_intersections['predicted_offset_f'] > 2.0]['predicted_offset_f'].mean():.1f}°F",
+            "sub1": "Avg Offset in Unshaded Strips",
+            "cls1": "hot",
+            "title2": "Tree Canopy Coverage",
+            "val2": "14.2%",
+            "sub2": "Severe Deficit vs 30% City Goal",
+            "cls2": "emerald",
+            "title3": "Impervious Surface Ratio",
+            "val3": "74.8%",
+            "sub3": "Asphalt & Thermal Mass Burden",
+            "cls3": "warning",
+            "title4": "Cool Pavement Candidates",
+            "val4": "4 Corridors",
+            "sub4": "Red Hook, Bushwick, ENY, Brownsville",
+            "cls4": "primary"
+        }
     }
 }
 p_info = persona_context[st.session_state["selected_persona"]]
 
 st.markdown(f"""
-    <div style="background-color: #FFFFFF; border-radius: 8px; padding: 10px 16px; margin: 8px 0 14px 0; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <strong style="color: #0F172A; font-size: 0.88rem;">Active Persona:</strong>
-            <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 700; font-size: 0.82rem; padding: 2px 8px; border-radius: 4px;">
-                {st.session_state['selected_persona']}
+    <div class="focus-hero-card" style="border-left: 5px solid {p_info['badge_color']};">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="background-color: {p_info['badge_color']}15; color: {p_info['badge_color']}; font-weight: 800; font-size: 0.82rem; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">
+                    {p_info['icon']} Persona: {st.session_state['selected_persona']}
+                </span>
+                <span style="font-size: 0.74rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; {p_info['zoom_pill_style']}">
+                    {p_info['zoom_desc']}
+                </span>
+            </div>
+            <span style="font-size: 0.74rem; color: #475569; font-weight: 600; background: #F1F5F9; padding: 3px 10px; border-radius: 4px;">
+                🏛️ Lead Agency: <strong>{p_info['agency']}</strong>
             </span>
-            <span style="color: #64748B; font-size: 0.82rem;">{p_info['desc']}</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="font-size: 0.76rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; {p_info['zoom_pill_style']}">
-                {p_info['zoom_desc']}
+        <div style="margin-top: 6px;">
+            <div style="font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.06em; color: #64748B; font-weight: 700; margin-bottom: 2px;">
+                Active Operational Focus
             </div>
-            <div style="font-size: 0.78rem; color: #334155; font-weight: 600; background: #F1F5F9; padding: 3px 8px; border-radius: 4px;">
-                🎯 <strong>Focus</strong>: {p_info['focus']}
-            </div>
+            <h3 style="margin: 0; color: #0F172A; font-size: 1.18rem; font-weight: 800; line-height: 1.3;">
+                🎯 {p_info['focus']}
+            </h3>
+            <p style="margin: 4px 0 0 0; color: #475569; font-size: 0.84rem; line-height: 1.4;">
+                {p_info['desc']}
+            </p>
         </div>
     </div>
 """, unsafe_allow_html=True)
 
 
-
-
 # -----------------------------------------------------------------------------
-# 8. DASHBOARD KPI CARDS
+# 8. DASHBOARD KPI CARDS (DYNAMICALLY TAILORED TO ACTIVE PERSONA)
 # -----------------------------------------------------------------------------
-render_kpi_cards(df_intersections, data_mode=st.session_state["data_mode"])
+render_kpi_cards(df_intersections, data_mode=st.session_state["data_mode"], custom_kpis=p_info["kpi_metrics"])
 
 st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
 
