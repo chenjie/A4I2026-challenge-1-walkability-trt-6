@@ -125,6 +125,27 @@ def render_screen_2() -> None:
             "gemini_live_speech": result.get("gemini_live_speech")
         })
 
+    # Synchronize initial greeting if persona changed before active conversation started
+    if len(st.session_state.get("copilot_messages", [])) == 1 and st.session_state["copilot_messages"][0]["role"] == "assistant":
+        if st.session_state.get("last_persona_greeting") != active_persona_key:
+            st.session_state["copilot_messages"][0] = {
+                "role": "assistant",
+                "content": (
+                    f"👋 **Greetings! I am the {persona_meta['title']} ({persona_meta['agency']}).**\n\n"
+                    "I am powered by Google ADK with 11 custom spatial and climate tools connected to BigQuery ML.\n\n"
+                    "**How can I assist your heat resilience planning today?** You can select a benchmark question below or ask about any street, cooling intervention, or equity trade-off."
+                ),
+                "tools_called": ["agent_bootstrap", "persona_classifier"],
+                "google_maps_url": None,
+                "gemini_live_speech": f"Hello. I am the {persona_meta['title']} with the {persona_meta['agency']}. Ready for urban heat planning.",
+            }
+            st.session_state["last_persona_greeting"] = active_persona_key
+
+    # Check for pending query dispatched from sidebar
+    pending_query = st.session_state.pop("pending_query", None)
+    if pending_query:
+        submit_query(pending_query)
+
     with chat_col:
         # Prompt Chips Header
         st.markdown("""

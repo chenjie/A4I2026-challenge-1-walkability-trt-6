@@ -108,47 +108,137 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 
-    # Synchronize screen state with query parameters
+    # Synchronize screen and persona state with query parameters
     if "screen" in st.query_params:
         qp = str(st.query_params["screen"]).lower()
         if "3" in qp or "equity" in qp or "dispatch" in qp:
             st.session_state["active_screen"] = "Screen 3"
-        elif "2" in qp or "copilot" in qp or "agent" in qp:
+        elif "2" in qp or "copilot" in qp or "agent" in qp or "chat" in qp:
             st.session_state["active_screen"] = "Screen 2"
         elif "1" in qp or "heat" in qp:
             st.session_state["active_screen"] = "Screen 1"
 
-    active_screen = st.session_state.get("active_screen", "Screen 1")
+    if "persona" in st.query_params:
+        p_qp = str(st.query_params["persona"]).lower()
+        if "emergency" in p_qp:
+            st.session_state["selected_persona"] = "Emergency Management Officer"
+        elif "forestry" in p_qp or "sustainability" in p_qp:
+            st.session_state["selected_persona"] = "Sustainability / Urban Forestry Officer"
+        elif "resident" in p_qp:
+            st.session_state["selected_persona"] = "Vulnerable Resident / Live Location"
+        elif "city" in p_qp or "planner" in p_qp:
+            st.session_state["selected_persona"] = "City Planner"
 
-    st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 6px;'>Navigation</p>", unsafe_allow_html=True)
+    active_screen = st.session_state.get("active_screen", "Screen 1")
+    selected_persona = st.session_state.get("selected_persona", "City Planner")
+
+    # -------------------------------------------------------------------------
+    # 1. AI CHATBOTS SECTION (PROMINENT 1-CLICK ACCESS ON THE LEFT)
+    # -------------------------------------------------------------------------
+    st.markdown("""
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; margin-bottom: 6px;">
+            <p style='font-size: 0.72rem; text-transform: uppercase; color: #38BDF8; font-weight: 700; letter-spacing: 0.08em; margin: 0;'>
+                🤖 AI Chatbots
+            </p>
+            <span style="font-size: 0.65rem; background: rgba(56, 189, 248, 0.15); color: #38BDF8; padding: 2px 6px; border-radius: 4px; font-weight: 700;">
+                EASY ACCESS
+            </span>
+        </div>
+    """, unsafe_allow_html=True)
+
+    chatbots_info = [
+        ("city_planner", "City Planner", "🏛️ City Planner Copilot", "Capital allocation & BQML ranking"),
+        ("emergency_manager", "Emergency Management Officer", "🚨 Emergency Management", "Tactical dispatch & hydration vans"),
+        ("forestry_officer", "Sustainability / Urban Forestry Officer", "🌳 Urban Forestry Copilot", "Canopy deficit & cool pavement"),
+        ("resident", "Vulnerable Resident / Live Location", "📍 Resident Safety Copilot", "Refuge directions & microclimate"),
+    ]
+
+    for cb_id, p_name, cb_title, cb_desc in chatbots_info:
+        is_chat_active = (active_screen == "Screen 2" and selected_persona == p_name)
+        cb_class = "nav-item nav-active" if is_chat_active else "nav-item nav-inactive"
+        if is_chat_active:
+            cb_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>'
+        else:
+            cb_badge = '<span class="badge-soon" style="background:#1E293B; color:#94A3B8;">CHAT</span>'
+        
+        st.markdown(f"""
+            <a href="?screen=2&persona={cb_id}" target="_self" class="{cb_class}" title="{cb_desc}">
+                <span>{cb_title}</span>
+                {cb_badge}
+            </a>
+        """, unsafe_allow_html=True)
+
+    # -------------------------------------------------------------------------
+    # 2. QUICK ASK / CHATBOT INTERACTION ON LEFT
+    # -------------------------------------------------------------------------
+    with st.expander("⚡ Quick Ask Active Chatbot", expanded=(active_screen != "Screen 2")):
+        st.markdown(f"<div style='font-size:0.75rem; color:#94A3B8; margin-bottom:8px;'>Target Agent: <strong style='color:#38BDF8;'>{selected_persona}</strong></div>", unsafe_allow_html=True)
+        quick_query_input = st.text_input("Ask question:", placeholder="Ask anything...", key="sidebar_quick_chat_input", label_visibility="collapsed")
+        c1, c2 = st.columns([1, 1])
+        with c1:
+            if st.button("🚀 Ask AI", key="sb_btn_ask", use_container_width=True):
+                if quick_query_input and quick_query_input.strip():
+                    st.session_state["pending_query"] = quick_query_input.strip()
+                    st.session_state["active_screen"] = "Screen 2"
+                    st.query_params["screen"] = "2"
+                    st.rerun()
+        with c2:
+            if st.button("💬 Open Chat", key="sb_btn_open", use_container_width=True):
+                st.session_state["active_screen"] = "Screen 2"
+                st.query_params["screen"] = "2"
+                st.rerun()
+
+        st.markdown("<div style='font-size:0.68rem; color:#64748B; font-weight:700; text-transform:uppercase; margin-top:8px; margin-bottom:4px;'>Popular Prompts:</div>", unsafe_allow_html=True)
+        if st.button("🌡️ Why is Pitkin hotter?", key="sb_p_pitkin", use_container_width=True):
+            st.session_state["pending_query"] = "Why is Pitkin Ave & Mother Gaston Blvd so much worse than two blocks north?"
+            st.session_state["active_screen"] = "Screen 2"
+            st.query_params["screen"] = "2"
+            st.rerun()
+        if st.button("🚨 Hydration van staging", key="sb_p_vans", use_container_width=True):
+            st.session_state["pending_query"] = "Where should Brooklyn place emergency hydration vans today for high-vulnerability transit corridors?"
+            st.session_state["active_screen"] = "Screen 2"
+            st.query_params["screen"] = "2"
+            st.rerun()
+        if st.button("⚖️ Run equity audit", key="sb_p_equity", use_container_width=True):
+            st.session_state["pending_query"] = "Run the algorithmic equity audit on East Williamsburg vs Coney Island."
+            st.session_state["active_screen"] = "Screen 2"
+            st.query_params["screen"] = "2"
+            st.rerun()
+        if st.button("📍 Closest cooling center", key="sb_p_refuge", use_container_width=True):
+            st.session_state["pending_query"] = "Where is the closest cooling center to 100 Stone Ave Brooklyn with walking navigation?"
+            st.session_state["active_screen"] = "Screen 2"
+            st.query_params["screen"] = "2"
+            st.rerun()
+
+    st.markdown("<hr style='border-color: #1E293B; margin: 16px 0 12px 0;'>", unsafe_allow_html=True)
+
+    # -------------------------------------------------------------------------
+    # 3. SPATIAL MAPS & EQUITY AUDIT (VIEWS)
+    # -------------------------------------------------------------------------
+    st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 6px;'>Spatial Maps & Audits</p>", unsafe_allow_html=True)
 
     s1_class = "nav-item nav-active" if active_screen == "Screen 1" else "nav-item nav-inactive"
-    s1_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 1" else '<span class="badge-soon">Screen 1</span>'
-
-    s2_class = "nav-item nav-active" if active_screen == "Screen 2" else "nav-item nav-inactive"
-    s2_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 2" else '<span class="badge-soon" style="background:#0284C7; color:white;">Screen 2</span>'
+    s1_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 1" else '<span class="badge-soon">MAP</span>'
 
     s3_class = "nav-item nav-active" if active_screen == "Screen 3" else "nav-item nav-inactive"
-    s3_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 3" else '<span class="badge-soon">Screen 3</span>'
+    s3_badge = '<span style="font-size: 0.68rem; background: #0284C7; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 600;">ACTIVE</span>' if active_screen == "Screen 3" else '<span class="badge-soon">AUDIT</span>'
 
     st.markdown(f"""
         <a href="?screen=1" target="_self" class="{s1_class}">
-            <span>🔥 Heat Intelligence</span>
+            <span>🔥 Heat Intelligence Map</span>
             {s1_badge}
         </a>
-        <a href="?screen=2" target="_self" class="{s2_class}">
-            <span>🤖 AI Planning Copilot</span>
-            {s2_badge}
-        </a>
         <a href="?screen=3" target="_self" class="{s3_class}">
-            <span>⚖️ Equity Audit</span>
+            <span>⚖️ Government Equity Audit</span>
             {s3_badge}
         </a>
     """, unsafe_allow_html=True)
-    
-    st.markdown("<hr style='border-color: #1E293B; margin: 20px 0 14px 0;'>", unsafe_allow_html=True)
-    
-    # City Selector (Analysis Target City)
+
+    st.markdown("<hr style='border-color: #1E293B; margin: 16px 0 12px 0;'>", unsafe_allow_html=True)
+
+    # -------------------------------------------------------------------------
+    # 4. TARGET CITY & PERSONA LENS CONTROLS
+    # -------------------------------------------------------------------------
     st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #94A3B8; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px;'>Analysis Target City</p>", unsafe_allow_html=True)
     city_options = ["New York — Brooklyn", "Dallas, Texas", "Chicago, Illinois (Locked)"]
     selected_city_val = st.selectbox(
@@ -159,8 +249,7 @@ with st.sidebar:
     )
     st.session_state["selected_city"] = selected_city_val
 
-    # Decision Persona Selector
-    st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #94A3B8; font-weight: 700; letter-spacing: 0.08em; margin-top: 14px; margin-bottom: 4px;'>Decision Persona</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.72rem; text-transform: uppercase; color: #94A3B8; font-weight: 700; letter-spacing: 0.08em; margin-top: 12px; margin-bottom: 4px;'>Active Persona Lens</p>", unsafe_allow_html=True)
     persona_options = [
         "City Planner",
         "Emergency Management Officer",
@@ -175,27 +264,6 @@ with st.sidebar:
         label_visibility="collapsed"
     )
     st.session_state["selected_persona"] = selected_persona_val
-
-    # Data Mode Toggle Indicator
-    st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
-    mode_col1, mode_col2 = st.columns([1, 1])
-    with mode_col1:
-        st.markdown("<span style='font-size: 0.75rem; color: #94A3B8; font-weight: 600;'>Data Mode:</span>", unsafe_allow_html=True)
-    with mode_col2:
-        is_live = st.toggle("Live BQ", value=False, help="Toggle between Demo (synthetic) mode and Live BigQuery ML backend.")
-        st.session_state["data_mode"] = "Live" if is_live else "Demo"
-
-    st.markdown("""
-        <div style="background-color: #1E293B; border-radius: 8px; padding: 12px; margin-top: 10px; border: 1px solid #334155;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                <span class="badge-demo">Demo Mode</span>
-                <span style="font-size: 0.70rem; color: #38BDF8; font-weight: 600;">NOAA Heat Watch</span>
-            </div>
-            <p style="font-size: 0.74rem; color: #CBD5E1; margin: 0; line-height: 1.35;">
-                Simulated campaign data (~15,000 traverse points). Live BigQuery endpoint: <code>a4i_climate.heat_observations</code>.
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
@@ -252,8 +320,8 @@ else:
     with header_col2:
         st.markdown("""
             <div style="text-align: right; padding-top: 4px;">
-                <span class="badge-demo" style="font-size: 0.80rem; padding: 4px 12px;">
-                    ⚠️ Demo Mode — Synthetic Data
+                <span style="font-size: 0.74rem; background: #EFF6FF; color: #1E40AF; padding: 4px 12px; border-radius: 6px; font-weight: 600; border: 1px solid #BFDBFE;">
+                    NOAA Heat Watch · BQML
                 </span>
             </div>
         """, unsafe_allow_html=True)
