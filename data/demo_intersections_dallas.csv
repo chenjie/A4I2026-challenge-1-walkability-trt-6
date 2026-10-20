@@ -1,0 +1,14 @@
+intersection_id,intersection_name,latitude,longitude,predicted_offset_f,neighborhood,population,median_age,no_vehicle_rate,vulnerable_population,priority_score,risk_category
+DAL-01,MLK Jr Blvd & Malcolm X Blvd,32.7580,-96.7620,8.2,South Dallas,28400,36.8,22.4,9200,96,Significantly Hotter
+DAL-02,Singleton Blvd & Hampton Rd,32.7820,-96.8450,7.4,West Dallas,24100,33.2,18.5,7500,92,Significantly Hotter
+DAL-03,Buckner Blvd & Lake June Rd,32.7310,-96.6980,6.9,Pleasant Grove,33500,31.5,16.1,8800,89,Significantly Hotter
+DAL-04,Marsalis Ave & 4th St,32.7290,-96.8150,6.1,Oak Cliff,38200,34.0,19.8,11200,87,Significantly Hotter
+DAL-05,Park Lane & Ridgecrest Rd,32.8710,-96.7570,5.8,Vickery Meadow,26900,29.8,27.5,9400,86,Significantly Hotter
+DAL-06,Webb Chapel Rd & Lombardy Ln,32.8620,-96.8680,5.2,Bachman Lake,22800,32.4,21.0,7100,80,Moderately Hotter
+DAL-07,Harry Hines Blvd & Medical Center,32.8120,-96.8370,4.6,Medical District,16300,35.1,12.2,3400,74,Moderately Hotter
+DAL-08,Elm St & Crowdus St,32.7840,-96.7840,3.8,Deep Ellum,8900,32.0,14.5,1800,69,Moderately Hotter
+DAL-09,Bishop Ave & 8th St,32.7480,-96.8280,2.1,Bishop Arts,14200,36.2,11.0,2200,64,Near City Reference
+DAL-10,Main St & Akard St,32.7767,-96.7970,1.8,Downtown Dallas,15100,34.8,18.2,2600,61,Near City Reference
+DAL-11,McKinney Ave & Lemmon Ave,32.8010,-96.8040,0.4,Uptown,31500,34.5,8.5,2700,45,Near City Reference
+DAL-12,Skillman St & Royal Ln,32.8890,-96.7210,-1.8,Lake Highlands,35400,38.6,6.2,2900,28,Cooler than Reference
+DAL-13,E Lawther Dr & Garland Rd,32.8360,-96.7180,-3.5,White Rock Lake,18200,41.2,4.1,1100,18,Cooler than Reference

@@ -1,0 +1,61 @@
+{
+  "city": "Brooklyn, New York",
+  "generated_by": "Google ADK Multi-Agent Resilience Planner (Provisional)",
+  "recommendations": [
+    {
+      "intersection_id": "BK-01",
+      "intersection_name": "Rockaway Ave & Pitkin Ave",
+      "neighborhood": "Brownsville",
+      "intervention": "hydration_truck",
+      "intervention_title": "NYCEM Hydration Truck Staging",
+      "agency": "NYCEM",
+      "reason": "Elevated heat offset (+5.6°F) and 31.4% zero-vehicle rate; critical hydration priority.",
+      "catchment_radius_m": 500,
+      "priority": "High"
+    },
+    {
+      "intersection_id": "BK-02",
+      "intersection_name": "Pennsylvania Ave & Atlantic Ave",
+      "neighborhood": "East New York",
+      "intervention": "cooling_center",
+      "intervention_title": "DOHMH Cooling Center Expansion",
+      "agency": "DOHMH",
+      "reason": "High vulnerable population (9,100) and unshaded commercial corridors requiring indoor shelter.",
+      "catchment_radius_m": 500,
+      "priority": "High"
+    },
+    {
+      "intersection_id": "BK-03",
+      "intersection_name": "Knickerbocker Ave & Myrtle Ave",
+      "neighborhood": "Bushwick",
+      "intervention": "cooling_center",
+      "intervention_title": "DOHMH Cooling Center Expansion",
+      "agency": "DOHMH",
+      "reason": "High density multifamily housing combined with elevated subway thermal retention.",
+      "catchment_radius_m": 500,
+      "priority": "High"
+    },
+    {
+      "intersection_id": "BK-06",
+      "intersection_name": "Mermaid Ave & Stillwell Ave",
+      "neighborhood": "Coney Island",
+      "intervention": "hydration_truck",
+      "intervention_title": "NYCEM Senior Wellness & Hydration Route",
+      "agency": "NYCEM",
+      "reason": "Disproportionately high senior density (median age 42.6) with 34.8% lack of vehicle access.",
+      "catchment_radius_m": 500,
+      "priority": "High"
+    },
+    {
+      "intersection_id": "BK-08",
+      "intersection_name": "Van Brunt St & Pioneer St",
+      "neighborhood": "Red Hook",
+      "intervention": "tree_corridor",
+      "intervention_title": "NYC Parks High-Albedo Tree Corridor",
+      "agency": "NYC Parks",
+      "reason": "Candidate for cool pavement overlay and waterfront vegetative buffer to enhance harbor airflow.",
+      "catchment_radius_m": 500,
+      "priority": "Moderate"
+    }
+  ]
+}
