@@ -224,15 +224,33 @@ all_ids = df_intersections["intersection_id"].tolist()
 if st.session_state["selected_intersection_id"] not in all_ids:
     st.session_state["selected_intersection_id"] = all_ids[0]
 
+# Bridge selected location to Screen 2
+if "screen1_selected_location" not in st.session_state or not st.session_state.get("selected_latitude"):
+    sel_rec = get_intersection_details(st.session_state["selected_intersection_id"], city=city_key)
+    if sel_rec:
+        st.session_state["screen1_selected_location"] = {
+            "latitude": sel_rec["latitude"],
+            "longitude": sel_rec["longitude"],
+            "name": f"{sel_rec.get('neighborhood', 'Brooklyn')} ({sel_rec.get('intersection_name', '')})",
+        }
+        st.session_state["selected_latitude"] = sel_rec["latitude"]
+        st.session_state["selected_longitude"] = sel_rec["longitude"]
+        st.session_state["selected_location_name"] = f"{sel_rec.get('neighborhood', 'Brooklyn')} ({sel_rec.get('intersection_name', '')})"
 
-# -----------------------------------------------------------------------------
+
 # -----------------------------------------------------------------------------
 # 5. SCREEN ROUTER
 # -----------------------------------------------------------------------------
 if st.session_state["active_screen"] == "Screen 3":
     render_screen_3()
 elif st.session_state["active_screen"] == "Screen 2":
-    render_screen_2()
+    mode_map = {
+        "City Planner": "budget",
+        "Emergency Management Officer": "today",
+        "Sustainability / Urban Forestry Officer": "long_term",
+    }
+    planning_mode = mode_map.get(st.session_state.get("selected_persona"), "budget")
+    render_screen_2(planning_mode=planning_mode)
 else:
     # -----------------------------------------------------------------------------
     # 5. HEADER SECTION (SCREEN 1)

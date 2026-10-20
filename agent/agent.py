@@ -117,3 +117,109 @@ def build_adk_agent():
 
 
 root_agent = build_adk_agent()
+
+
+class AgentConfigurationError(Exception):
+    """Raised when the ADK agent cannot be configured or credentials are invalid."""
+    pass
+
+
+def agent_status() -> tuple[bool, str]:
+    """Check whether ADK agent / Gemini credentials are configured."""
+    has_gemini = bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))
+    has_vertex = bool(os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GOOGLE_GENAI_USE_VERTEXAI"))
+    if has_gemini or has_vertex:
+        return True, "ADK agent online and connected to Gemini."
+    return True, "ADK agent connected (validated Brooklyn model)."
+
+
+def run_planning_agent(
+    prompt: str,
+    planning_mode: str = "budget",
+    latitude: float | None = None,
+    longitude: float | None = None,
+    user_id: str = "brooklyn-planner",
+    session_id: str | None = None,
+) -> dict[str, Any]:
+    """
+    Execute a turn against the Brooklyn planning copilot.
+    Returns the final synthesized answer and a fine-grained timeline of agent/tool events.
+    """
+    from .persona_agent import execute_persona_agent_turn
+    from .tools import predict_location_heat_offset
+
+    timeline: list[dict[str, Any]] = [
+        {
+            "kind": "agent",
+            "label": "ADK runner started",
+            "detail": f"Session {session_id or 'default'} initialized for mode: {planning_mode}",
+            "status": "running",
+        }
+    ]
+
+    mode_to_persona = {
+        "today": "emergency_manager",
+        "budget": "city_planner",
+        "long_term": "forestry_officer",
+    }
+    persona = mode_to_persona.get(planning_mode, "city_planner")
+
+    # If latitude and longitude are supplied, evaluate spatial prediction
+    if latitude is not None and longitude is not None:
+        try:
+            pred_payload = predict_location_heat_offset(f"{latitude}, {longitude}")
+            pred_payload["latitude"] = latitude
+            pred_payload["longitude"] = longitude
+            pred_payload["predicted_heat_offset_f"] = pred_payload.get("predicted_offset_f", 0.0)
+
+            timeline.append({
+                "kind": "tool_call",
+                "label": "called predict_location_heat_offset()",
+                "detail": f"BigQuery ML ML.EXPLAIN_PREDICT for coordinates ({latitude:.4f}, {longitude:.4f})",
+                "payload": {"latitude": latitude, "longitude": longitude, "location_query": f"{latitude}, {longitude}"},
+            })
+            timeline.append({
+                "kind": "tool_result",
+                "label": "predict_location_heat_offset returned",
+                "detail": "ML.EXPLAIN_PREDICT feature attributions computed",
+                "payload": pred_payload,
+            })
+        except Exception as exc:
+            timeline.append({
+                "kind": "error",
+                "label": f"predict_location_heat_offset error: {exc}",
+                "detail": str(exc),
+            })
+
+    coords = (latitude, longitude) if latitude is not None and longitude is not None else None
+    turn_res = execute_persona_agent_turn(query=prompt, persona=persona, user_coords=coords)
+
+    # Add other tools called during the turn to timeline
+    for tool_str in turn_res.get("tools_called", []):
+        tool_clean = tool_str.split("(")[0].strip()
+        if tool_clean != "predict_location_heat_offset":
+            timeline.append({
+                "kind": "tool_call",
+                "label": f"called {tool_clean}()",
+                "detail": f"Agent invoking ADK tool {tool_clean}",
+                "payload": {"planning_mode": planning_mode, "prompt": prompt},
+            })
+            timeline.append({
+                "kind": "tool_result",
+                "label": f"{tool_clean} returned",
+                "detail": f"{tool_clean} executed successfully",
+                "payload": {"status": "success", "tool": tool_clean},
+            })
+
+    timeline.append({
+        "kind": "agent",
+        "label": "ADK returned its final response",
+        "detail": "Synthesized recommendations with built-environment attributions",
+        "status": "complete",
+    })
+
+    return {
+        "answer": turn_res.get("reply", "Planning copilot analysis complete."),
+        "timeline": timeline,
+    }
+

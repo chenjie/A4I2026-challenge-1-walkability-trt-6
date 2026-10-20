@@ -67,6 +67,21 @@ def _compute_action_tier(priority_score: float, over_65_pct: float) -> str:
     return "Tier 4: Baseline Monitoring & Stewardship"
 
 
+TOOL_DESCRIPTIONS: dict[str, str] = {
+    "predict_location_heat_offset": "Predict microclimate heat offset (°F) using BigQuery ML (ML.EXPLAIN_PREDICT) for any coordinate or street intersection in Brooklyn.",
+    "analyze_heat_frequency": "Analyze 7-year NOAA GHCN-Daily weather station history (2019-2025) to quantify annual threshold exceedance days.",
+    "recommend_interventions": "Rank and recommend cooling interventions using continuous multi-criteria scoring.",
+    "run_equity_audit": "Audit demographic parity and Title VI equity across candidate intervention locations.",
+    "dispatch_gov_cooling_action": "Generate multi-agency municipal dispatch allocations across emergency, budget, and long-term clocks.",
+    "fetch_live_brooklyn_weather": "Fetch real-time ambient weather for Brooklyn.",
+    "compare_candidate_sites": "Run head-to-head multi-criteria siting comparison between candidate locations.",
+    "find_nearest_cooling_center_and_heat": "Locate nearest cooling facilities and calculate walking routes.",
+    "generate_placement_recommendation": "Generate actionable site recommendation with demographic context and budget estimate.",
+    "geocode_street_or_intersection": "Geocode street address or intersection into latitude and longitude coordinates.",
+    "query_climate_dataset_summary": "Query high-level metrics from NOAA Heat Watch and Census demographic datasets.",
+}
+
+
 def fetch_live_brooklyn_weather(
     lat: float = 40.6694,
     lon: float = -73.9085,
@@ -516,8 +531,11 @@ def predict_location_heat_offset(
             "address": f"Unmeasured Street Coordinate ({lat:.4f}, {lon:.4f}) — {dist_to_nearest_km:.2f} km from {nearest_site['intersection']}",
             "neighborhood": f"{nearest_site['neighborhood']} (Unmeasured Block)",
             "geo_id": nearest_site["geo_id"],
+            "latitude": round(lat, 5),
+            "longitude": round(lon, 5),
             "coordinates": {"latitude": round(lat, 4), "longitude": round(lon, 4)},
             "predicted_offset_f": offset_f,
+            "predicted_heat_offset_f": offset_f,
             "predicted_offset_statement": (
                 f"This unmeasured location runs {offset_f:+.2f}°F {'hotter' if offset_f >= 0 else 'cooler'} "
                 f"than the rest of Brooklyn (city campaign mean: {REF_DATA['campaign_summary']['city_avg_temp_f']}°F)."
@@ -562,11 +580,14 @@ def predict_location_heat_offset(
         "address": nearest_site["address"],
         "neighborhood": nearest_site["neighborhood"],
         "geo_id": nearest_site["geo_id"],
+        "latitude": round(nearest_site["latitude"], 5),
+        "longitude": round(nearest_site["longitude"], 5),
         "coordinates": {
             "latitude": nearest_site["latitude"],
             "longitude": nearest_site["longitude"],
         },
         "predicted_offset_f": offset_f,
+        "predicted_heat_offset_f": offset_f,
         "predicted_offset_statement": (
             f"This spot runs {offset_f:+.1f}°F {'hotter' if offset_f >= 0 else 'cooler'} "
             f"than the rest of Brooklyn (city campaign mean: {REF_DATA['campaign_summary']['city_avg_temp_f']}°F)."
