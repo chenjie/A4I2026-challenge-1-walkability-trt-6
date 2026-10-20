@@ -27,3 +27,5 @@ Screen 3 — Government Cooling Dispatch & Equity Audit
 Purpose: Convert AI recommendations into actionable interventions.
 
 Include recommended dispatch locations, agency assignments, approximate coverage rings, equity gaps, ML.EXPLAIN_PREDICT explanations, and a downloadable action proposal.
+
+![alt text](image.png)
